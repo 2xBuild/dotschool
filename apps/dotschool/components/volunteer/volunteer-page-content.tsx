@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 
 import { VolunteerForm } from "@/components/volunteer/volunteer-form";
+import { useClickSound } from "@/hooks/use-app-sound";
 
 type Props = {
   isSignedIn: boolean;
@@ -13,6 +14,7 @@ type Props = {
 
 export function VolunteerPageContent({ isSignedIn, userName }: Props) {
   const [showForm, setShowForm] = useState(false);
+  const [playClick] = useClickSound();
 
   if (showForm && isSignedIn) {
     return (
@@ -51,7 +53,7 @@ export function VolunteerPageContent({ isSignedIn, userName }: Props) {
         {isSignedIn ? (
           <button
             type="button"
-            onClick={() => setShowForm(true)}
+            onClick={() => { playClick(); setShowForm(true); }}
             className="inline-flex items-center gap-1.5 rounded-full btn-blue px-5 py-2.5 text-sm font-semibold transition-colors"
           >
             Apply

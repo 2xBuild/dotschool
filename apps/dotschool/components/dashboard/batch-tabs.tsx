@@ -13,6 +13,7 @@ import {
 import type { BatchProgramDetails } from "@/components/dashboard/batch-types";
 import { enrollInBatch } from "@/server/batches/enroll";
 import { cn } from "@/lib/utils";
+import { useTabSwitchSound, useClickSound } from "@/hooks/use-app-sound";
 
 export type BatchTabItem = {
   id: string;
@@ -93,6 +94,8 @@ export function BatchTabs({
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const [playTabSwitch] = useTabSwitchSound();
+  const [playClick] = useClickSound();
 
   function onJoin(batchId: string) {
     setError(null);
@@ -125,7 +128,7 @@ export function BatchTabs({
                   ? "bg-[#2f79f6] text-white"
                   : "text-muted-foreground hover:text-foreground",
               )}
-              onClick={() => setTab("upcoming")}
+              onClick={() => { playTabSwitch(); setTab("upcoming"); }}
             >
               Upcoming
             </button>
@@ -139,7 +142,7 @@ export function BatchTabs({
                   ? "bg-[#2f79f6] text-white"
                   : "text-muted-foreground hover:text-foreground",
               )}
-              onClick={() => setTab("yours")}
+              onClick={() => { playTabSwitch(); setTab("yours"); }}
             >
               Your batches
             </button>
@@ -198,7 +201,7 @@ export function BatchTabs({
                             <button
                               type="button"
                               disabled={pending}
-                              onClick={() => onJoin(batch.id)}
+                              onClick={() => { playClick(); onJoin(batch.id); }}
                               className={cn(
                                 "inline-flex items-center justify-center rounded-full border px-3 py-1 text-xs font-medium disabled:pointer-events-none disabled:opacity-50",
                                 s.primaryBtn,

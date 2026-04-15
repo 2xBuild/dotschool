@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { useNavClickSound } from "@/hooks/use-app-sound";
 
 export type BatchNavTab =
   | "home"
@@ -48,6 +49,7 @@ type BatchNavProps = {
 };
 
 export function BatchNav({ activeTab, onTabChange, isEnrolled }: BatchNavProps) {
+  const [playNavClick] = useNavClickSound();
   return (
     <nav className="border-b border-border/70">
       <div
@@ -70,7 +72,7 @@ export function BatchNav({ activeTab, onTabChange, isEnrolled }: BatchNavProps) 
                   ? "border-foreground text-foreground"
                   : "text-muted-foreground hover:text-foreground",
               )}
-              onClick={() => onTabChange(t.key)}
+              onClick={() => { playNavClick(); onTabChange(t.key); }}
             >
               <span className="inline-flex items-center gap-1.5">
                 {label}

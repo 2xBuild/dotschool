@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { ArrowUpRight, BadgeDollarSignIcon } from "lucide-react";
+import { SoundLink } from "@/components/landing/sound-link";
 
 const supporters = ["YOU", "OR", "YOUR", "COMPANY", "HERE"];
 const ctaButtonSizeClassName =
@@ -20,20 +20,20 @@ export function LandingVolunteers() {
         </p>
 
         <div className="flex items-center justify-center gap-2">
-          <Link
+          <SoundLink
             href="/volunteer"
             className={`${ctaButtonSizeClassName} bg-[#1f49ff] text-white hover:bg-[#1a3fd9]`}
           >
             Be volunteer
             <ArrowUpRight className="size-4 stroke-[2]" />
-          </Link>
-          <Link
+          </SoundLink>
+          <SoundLink
             href="/fund"
             className={`${ctaButtonSizeClassName} border border-[#1f49ff] bg-[#f6f9ff] text-[#1f49ff] hover:bg-[#ecf1ff]`}
           >
             Fund
             <BadgeDollarSignIcon className="size-4 stroke-[2]" />
-          </Link>
+          </SoundLink>
         </div>
       </div>
 

@@ -13,6 +13,7 @@ import {
 } from "@/components/dashboard/possible-batches";
 import { SiteFooter } from "@/components/site/site-footer";
 import { ThemeToggle } from "@/components/site/theme-toggle";
+import { useSoftClickSound } from "@/hooks/use-app-sound";
 
 type DashboardProfile = {
   name: string | null;
@@ -87,6 +88,7 @@ export function DashboardHome({
   canVotePossibleBatches,
   error,
 }: DashboardHomeProps) {
+  const [playSoftClick] = useSoftClickSound();
   const [showError, setShowError] = useState(!!error);
   const errorMessage = error ? (ERROR_MESSAGES[error] ?? "Something went wrong. Please try again.") : null;
 
@@ -128,7 +130,7 @@ export function DashboardHome({
       </header>
 
       {showError && errorMessage && (
-        <ErrorBanner message={errorMessage} onDismiss={() => setShowError(false)} />
+        <ErrorBanner message={errorMessage} onDismiss={() => { playSoftClick(); setShowError(false); }} />
       )}
 
       <main className="flex-1 px-6 py-10 sm:py-14">

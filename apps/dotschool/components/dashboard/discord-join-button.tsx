@@ -6,6 +6,7 @@ import { SiDiscord } from "react-icons/si";
 
 import { updateDiscordUsername } from "@/server/profile/actions";
 import { cn } from "@/lib/utils";
+import { useClickSound } from "@/hooks/use-app-sound";
 
 type DiscordJoinButtonProps = {
   discordUsername: string | null;
@@ -17,8 +18,10 @@ export function DiscordJoinButton({ discordUsername }: DiscordJoinButtonProps) {
   const [showForm, setShowForm] = useState(false);
   const [pending, startTransition] = useTransition();
   const linked = Boolean(discordUsername);
+  const [playClick] = useClickSound();
 
   function handleButtonClick() {
+    playClick();
     if (linked) {
       window.open(DISCORD_INVITE_URL, "_blank", "noopener,noreferrer");
       return;

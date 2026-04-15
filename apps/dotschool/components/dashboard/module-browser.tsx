@@ -5,6 +5,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { RichContent } from "@/components/ui/rich-content";
 import type { BatchModule } from "@/server/batches/modules";
+import { useSoftClickSound, useBackSound } from "@/hooks/use-app-sound";
 
 function FolderIcon({ open, className }: { open?: boolean; className?: string }) {
   if (open) {
@@ -146,6 +147,18 @@ type ModuleBrowserProps = {
 export function ModuleBrowser({ modules }: ModuleBrowserProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = modules.find((m) => m.id === selectedId) ?? null;
+  const [playSoftClick] = useSoftClickSound();
+  const [playBack] = useBackSound();
+
+  function handleSelect(id: string) {
+    playSoftClick();
+    setSelectedId(id);
+  }
+
+  function handleBack() {
+    playBack();
+    setSelectedId(null);
+  }
 
   if (modules.length === 0) {
     return (
@@ -167,7 +180,7 @@ export function ModuleBrowser({ modules }: ModuleBrowserProps) {
         <FileTree
           modules={modules}
           selectedId={null}
-          onSelect={setSelectedId}
+          onSelect={handleSelect}
         />
       </div>
     );
@@ -179,7 +192,7 @@ export function ModuleBrowser({ modules }: ModuleBrowserProps) {
         <button
           type="button"
           className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          onClick={() => setSelectedId(null)}
+          onClick={handleBack}
         >
           <BackArrow />
           Go Back
@@ -196,7 +209,7 @@ export function ModuleBrowser({ modules }: ModuleBrowserProps) {
             <FileTree
               modules={modules}
               selectedId={selectedId}
-              onSelect={setSelectedId}
+              onSelect={handleSelect}
               compact
             />
           </div>

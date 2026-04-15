@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
 import { cn } from "@/lib/utils";
+import { useClickSound } from "@/hooks/use-app-sound";
 
 type HowItWorksVisual =
   | "apply"
@@ -584,6 +585,7 @@ export default function HowItWorks({
 }: HowItWorksProps) {
   const tabItems = items.length > 0 ? items : HOW_IT_WORKS_ITEMS;
   const [activeIndex, setActiveIndex] = useState(0);
+  const [playClick] = useClickSound();
   const [isPaused, setIsPaused] = useState(false);
   const [isInView, setIsInView] = useState(true);
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -596,10 +598,11 @@ export default function HowItWorks({
   const handleTabClick = useCallback(
     (index: number) => {
       if (index === activeIndex) return;
+      playClick();
       setActiveIndex(index);
       setIsPaused(false);
     },
-    [activeIndex],
+    [activeIndex, playClick],
   );
 
   useEffect(() => {

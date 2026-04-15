@@ -126,7 +126,7 @@ export function SiteFooter({
               </li>
               <li>
                 <a
-                  href="https://github.com/dotschool"
+                  href="https://github.com/2xBuild/dotschool"
                   target="_blank"
                   rel="noopener noreferrer"
                   className={linkClass(brutalist, blue)}

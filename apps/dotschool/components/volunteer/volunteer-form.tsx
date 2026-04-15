@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { ArrowUpRight, Sparkles } from "lucide-react";
 
 import { submitVolunteerApplication } from "@/server/volunteer/actions";
+import { useClickSound, useSoftClickSound } from "@/hooks/use-app-sound";
 
 const ROLES = [
   { id: "developer", label: "Developer" },
@@ -22,6 +23,8 @@ export function VolunteerForm({ userName, onBack }: VolunteerFormProps) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [playClick] = useClickSound();
+  const [playSoftClick] = useSoftClickSound();
 
   if (submitted) {
     return (
@@ -111,6 +114,7 @@ export function VolunteerForm({ userName, onBack }: VolunteerFormProps) {
         <button
           type="submit"
           disabled={isPending}
+          onClick={() => { if (!isPending) playClick(); }}
           className="inline-flex items-center gap-1.5 rounded-full btn-blue px-5 py-2.5 text-sm font-semibold transition-colors disabled:pointer-events-none disabled:opacity-50"
         >
           {isPending ? "Submitting..." : "Submit"}
@@ -118,7 +122,7 @@ export function VolunteerForm({ userName, onBack }: VolunteerFormProps) {
         </button>
         <button
           type="button"
-          onClick={onBack}
+          onClick={() => { playSoftClick(); onBack(); }}
           className="inline-flex items-center rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
         >
           Cancel

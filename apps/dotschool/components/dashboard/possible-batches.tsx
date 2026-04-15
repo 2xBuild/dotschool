@@ -18,6 +18,7 @@ import {
 } from "@/components/dashboard/batch-list-card-styles";
 import { castBatchInterestVote } from "@/server/batches/interest";
 import { cn } from "@/lib/utils";
+import { useSoftClickSound, useToggleSound } from "@/hooks/use-app-sound";
 import {
   Collapsible,
   CollapsibleContent,
@@ -125,6 +126,8 @@ export function PossibleBatches({ items, canVote }: PossibleBatchesProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
+  const [playSoftClick] = useSoftClickSound();
+  const [playToggle] = useToggleSound();
 
   type VoteState = { up: number; down: number; userVote: "up" | "down" | null };
   const [optimistic, setOptimistic] = useState<Record<string, VoteState>>({});
@@ -187,7 +190,7 @@ export function PossibleBatches({ items, canVote }: PossibleBatchesProps) {
   return (
     <Collapsible
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={(v) => { playToggle(); setOpen(v); }}
       role="region"
       aria-labelledby="possible-batches-heading"
       className="mt-8 border-t border-border pt-8"
@@ -277,7 +280,7 @@ export function PossibleBatches({ items, canVote }: PossibleBatchesProps) {
                                       ? "Remove your upvote"
                                       : "Upvote this possible batch"
                                 }
-                                onClick={() => onVote(batch, "up")}
+                                onClick={() => { playSoftClick(); onVote(batch, "up"); }}
                                 className={cn(
                                   "inline-flex items-center justify-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold disabled:pointer-events-none disabled:opacity-50",
                                   s.voteDefault,
@@ -296,7 +299,7 @@ export function PossibleBatches({ items, canVote }: PossibleBatchesProps) {
                                       ? "Remove your downvote"
                                       : "Downvote this possible batch"
                                 }
-                                onClick={() => onVote(batch, "down")}
+                                onClick={() => { playSoftClick(); onVote(batch, "down"); }}
                                 className={cn(
                                   "inline-flex items-center justify-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold disabled:pointer-events-none disabled:opacity-50",
                                   s.voteActive,

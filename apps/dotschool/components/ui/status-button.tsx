@@ -5,11 +5,13 @@ import { cn } from "@/lib/utils";
 import { Tick02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { AnimatePresence, motion } from "motion/react";
-import { useCallback, useEffect, useMemo, useRef, useState, type ComponentProps, type MouseEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ComponentProps } from "react";
 import { useFormStatus } from "react-dom";
+import { useClickSound, useSuccessSound } from "@/hooks/use-app-sound";
 
 type Status = "idle" | "loading" | "success";
 type ButtonBaseProps = Omit<ComponentProps<typeof Button>, "children">;
+type ButtonClickEvent = Parameters<NonNullable<ButtonBaseProps["onClick"]>>[0];
 
 type StatusButtonVisualProps = ButtonBaseProps & {
   status: Status;
@@ -206,13 +208,22 @@ export function ActionStatusButton({
 }: ActionStatusButtonProps) {
   const [status, setStatus] = useState<Status>("idle");
   const { clearResetTimer } = useSuccessReset(successDurationMs, status, setStatus);
+  const [playClick] = useClickSound();
+  const [playSuccess] = useSuccessSound();
+
+  useEffect(() => {
+    if (status === "success") {
+      playSuccess();
+    }
+  }, [status, playSuccess]);
 
   const handleClick = useCallback(
-    async (event: MouseEvent<HTMLButtonElement>) => {
+    async (event: ButtonClickEvent) => {
       onClick?.(event);
       if (event.defaultPrevented || status !== "idle") {
         return;
       }
+      playClick();
       setStatus("loading");
       try {
         await onAction?.();
@@ -222,7 +233,7 @@ export function ActionStatusButton({
         setStatus("idle");
       }
     },
-    [clearResetTimer, onAction, onClick, status]
+    [clearResetTimer, onAction, onClick, playClick, status]
   );
 
   return (
@@ -244,10 +255,22 @@ export function SubmitStatusButton({
   successLabel = "Saved",
   type = "submit",
   disabled,
+  onClick,
   ...props
 }: SubmitStatusButtonProps) {
   const { pending } = useFormStatus();
   const status: Status = pending ? "loading" : "idle";
+  const [playClick] = useClickSound();
+
+  const handleClick = useCallback(
+    (event: ButtonClickEvent) => {
+      onClick?.(event);
+      if (!event.defaultPrevented && !pending) {
+        playClick();
+      }
+    },
+    [onClick, pending, playClick]
+  );
 
   return (
     <StatusButtonVisual
@@ -258,6 +281,7 @@ export function SubmitStatusButton({
       idleLabel={idleLabel}
       loadingLabel={loadingLabel}
       successLabel={successLabel}
+      onClick={handleClick}
     />
   );
 }

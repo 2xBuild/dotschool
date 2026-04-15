@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { roleName } from "@/lib/batch-volunteers";
 import { castPeerRating } from "@/server/batches/peer-votes";
 import { cn } from "@/lib/utils";
+import { useTabSwitchSound, useSoftClickSound } from "@/hooks/use-app-sound";
 
 export type RatedMember = {
   userId: string;
@@ -121,6 +122,8 @@ export function TeamPanel({ batchId, volunteers, members, canRate }: TeamPanelPr
   const [pending, startTransition] = useTransition();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [playTabSwitch] = useTabSwitchSound();
+  const [playSoftClick] = useSoftClickSound();
   const [optimistic, setOptimistic] = useState<
     Record<string, { userRating: number | null; avgRating: number; ratingCount: number }>
   >({});
@@ -208,7 +211,7 @@ export function TeamPanel({ batchId, volunteers, members, canRate }: TeamPanelPr
             type="button"
             role="tab"
             aria-selected={mode === "volunteers"}
-            onClick={() => setMode("volunteers")}
+            onClick={() => { playTabSwitch(); setMode("volunteers"); }}
             className={cn(
               "px-4 py-1.5 text-sm font-medium transition-colors",
               mode === "volunteers"
@@ -222,7 +225,7 @@ export function TeamPanel({ batchId, volunteers, members, canRate }: TeamPanelPr
             type="button"
             role="tab"
             aria-selected={mode === "members"}
-            onClick={() => setMode("members")}
+            onClick={() => { playTabSwitch(); setMode("members"); }}
             className={cn(
               "px-4 py-1.5 text-sm font-medium transition-colors",
               mode === "members"
@@ -272,7 +275,7 @@ export function TeamPanel({ batchId, volunteers, members, canRate }: TeamPanelPr
                     hover={hover[m.userId] ?? 0}
                     interactive={canRate}
                     disabled={pending}
-                    onSelect={(v) => onRate(m, v)}
+                    onSelect={(v) => { playSoftClick(); onRate(m, v); }}
                     onHover={(v) =>
                       setHover((prev) => ({ ...prev, [m.userId]: v }))
                     }

@@ -9,6 +9,7 @@ import { Button } from "@repo/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/card";
 import { SubmitStatusButton } from "@/components/ui/status-button";
 import { cn } from "@/lib/utils";
+import { useClickSound, useSoftClickSound } from "@/hooks/use-app-sound";
 
 type Socials = {
   discord?: {
@@ -148,6 +149,8 @@ export function ProfileHeaderCard({
   const [isEditing, setIsEditing] = useState(false);
   const initials = toInitials(displayName);
   const providerLabel = formatProvider(provider);
+  const [playClick] = useClickSound();
+  const [playSoftClick] = useSoftClickSound();
   const discordUsername = socials?.discord?.username ?? "";
   const supportLabel = socials?.support?.label ?? "";
   const supportUrl = socials?.support?.url ?? "";
@@ -169,7 +172,7 @@ export function ProfileHeaderCard({
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setIsEditing(false)}
+                  onClick={() => { playSoftClick(); setIsEditing(false); }}
                   className="h-12 w-28 rounded-full"
                 >
                   Cancel
@@ -184,7 +187,7 @@ export function ProfileHeaderCard({
                 type="button"
                 variant="outline"
                 size="lg"
-                onClick={() => setIsEditing(true)}
+                onClick={() => { playClick(); setIsEditing(true); }}
                 className="h-11 rounded-full px-5"
               >
                 <PencilLine className="size-4" />

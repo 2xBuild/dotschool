@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 
 import { cn } from "@/lib/utils";
+import { useToggleSound } from "@/hooks/use-app-sound";
 
 const THEME_STORAGE_KEY = "dotschool-theme";
 
@@ -32,6 +33,8 @@ export function ThemeToggle({
   className?: string;
   onDark?: boolean;
 }) {
+  const [playToggle] = useToggleSound();
+
   useEffect(() => {
     applyTheme(resolveTheme());
   }, []);
@@ -40,6 +43,7 @@ export function ThemeToggle({
     <button
       type="button"
       onClick={() => {
+        playToggle();
         const currentTheme = document.documentElement.classList.contains("dark")
           ? "dark"
           : "light";

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight, Plus } from "lucide-react";
 
 import { Logo } from "@/components/brand/logo";
+import { SoundLink } from "@/components/landing/sound-link";
 
 import { SmartCityIllus } from "./smart-city-illus";
 
@@ -27,10 +28,10 @@ export function LandingHeroBlock() {
           <Logo className="text-xl text-white sm:text-2xl [&>span:first-of-type]:bg-white" />
 
           <div className="flex items-center gap-2">
-            <Link href="/mission" className={missionButtonClassName}>
+            <SoundLink href="/mission" className={missionButtonClassName}>
               Our mission
               <ArrowUpRight className="size-4 stroke-[1.8]" aria-hidden />
-            </Link>
+            </SoundLink>
           </div>
         </div>
 
@@ -56,7 +57,7 @@ export function LandingHeroBlock() {
                 with cracked peers and mentors, by building real world projects with fun, prizes and competitions.
               </p>
               <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
-                <Link
+                <SoundLink
                   href="/login"
                   className={joinButtonClassName + " bg-white/80 hover:bg-white/95"}
                   style={{
@@ -66,9 +67,9 @@ export function LandingHeroBlock() {
                 >
                   <Plus className="size-4 stroke-[2]" aria-hidden />
                   Join school
-                </Link>
+                </SoundLink>
                 <a
-                  href="https://github.com/dotschool"
+                  href="https://github.com/2xBuild/dotschool"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-white/10 transition-colors duration-200 hover:bg-white hover:text-[#1f49ff]"
