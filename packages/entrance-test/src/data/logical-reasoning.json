@@ -1,0 +1,183 @@
+{
+  "setId": "LR-2026-01",
+  "title": "Logical Reasoning",
+  "category": "mental_reasoning",
+  "language": "English",
+  "targetAudience": "Global students",
+  "timeLimitMinutes": 20,
+  "questions": [
+    {
+      "id": "LR-001",
+      "format": "multiple_choice",
+      "difficulty": "medium",
+      "prompt": "If all remote learners are self-directed and some self-directed learners need mentoring, which statement must be true?",
+      "options": [
+        "All remote learners need mentoring.",
+        "Some remote learners need mentoring.",
+        "Some learners who need mentoring may be remote learners.",
+        "No self-directed learner needs mentoring."
+      ],
+      "answerKey": "C",
+      "rationale": "From the statements, overlap is possible but not guaranteed for all."
+    },
+    {
+      "id": "LR-002",
+      "format": "sequence",
+      "difficulty": "easy",
+      "prompt": "Find the next number in the pattern:",
+      "context": "2, 6, 12, 20, 30, ?",
+      "hint": "Look at the differences between consecutive numbers.",
+      "options": [
+        "40",
+        "42",
+        "44",
+        "48"
+      ],
+      "answerKey": "B",
+      "rationale": "Pattern is n(n+1): 1×2, 2×3, 3×4, 4×5, 5×6, next is 6×7 = 42."
+    },
+    {
+      "id": "LR-003",
+      "format": "mental_game",
+      "difficulty": "hard",
+      "prompt": "A class has students from 5 countries. Each student speaks at least one of 3 languages. What is the minimum number of students needed to guarantee at least 4 students sharing the same country-language pair?",
+      "hint": "Think about the pigeonhole principle.",
+      "options": [
+        "45",
+        "46",
+        "60",
+        "61"
+      ],
+      "answerKey": "B",
+      "rationale": "There are 15 country-language pairs. By pigeonhole principle, 15×3 + 1 = 46 guarantees one pair has at least 4 students."
+    },
+    {
+      "id": "LR-004",
+      "format": "true_false",
+      "difficulty": "easy",
+      "prompt": "If A is taller than B, and B is taller than C, then A must be taller than C.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "answerKey": "A",
+      "rationale": "Transitivity of the 'taller than' relation."
+    },
+    {
+      "id": "LR-005",
+      "format": "relationship",
+      "difficulty": "medium",
+      "prompt": "BOOK is to READER as SONG is to ___",
+      "options": [
+        "Singer",
+        "Listener",
+        "Composer",
+        "Musician",
+        "Instrument"
+      ],
+      "answerKey": "B",
+      "rationale": "A book is consumed by a reader; a song is consumed by a listener."
+    },
+    {
+      "id": "LR-006",
+      "format": "code_snippet",
+      "difficulty": "medium",
+      "prompt": "What will this function return when called with n = 5?",
+      "context": "function mystery(n) {\n  if (n <= 1) return n;\n  return mystery(n - 1) + mystery(n - 2);\n}",
+      "options": [
+        "3",
+        "5",
+        "8",
+        "13"
+      ],
+      "answerKey": "B",
+      "rationale": "This is the Fibonacci sequence. mystery(5) = mystery(4) + mystery(3) = 3 + 2 = 5."
+    },
+    {
+      "id": "LR-007",
+      "format": "mental_game",
+      "difficulty": "hard",
+      "prompt": "You have 8 identical-looking balls. One is slightly heavier. Using a balance scale, what is the minimum number of weighings needed to always find the heavier ball?",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "answerKey": "B",
+      "rationale": "Split into groups of 3-3-2. Weigh two groups of 3. If balanced, weigh the 2 remaining. If unbalanced, take the heavier group of 3 and weigh any 2 of them."
+    },
+    {
+      "id": "LR-008",
+      "format": "sequence",
+      "difficulty": "medium",
+      "prompt": "What comes next in the sequence?",
+      "context": "J, F, M, A, M, J, J, ?",
+      "options": [
+        "S",
+        "A",
+        "O",
+        "N"
+      ],
+      "answerKey": "B",
+      "rationale": "These are the first letters of months: January, February, March, April, May, June, July, August."
+    },
+    {
+      "id": "LR-009",
+      "format": "mental_game",
+      "difficulty": "easy",
+      "prompt": "A farmer has 17 sheep. All but 9 run away. How many sheep does the farmer have left?",
+      "options": [
+        "8",
+        "9",
+        "17",
+        "0"
+      ],
+      "answerKey": "B",
+      "rationale": "'All but 9' means 9 remain."
+    },
+    {
+      "id": "LR-010",
+      "format": "code_snippet",
+      "difficulty": "hard",
+      "prompt": "This function processes an array. What does it return for the input [3, 1, 4, 1, 5, 9, 2, 6]?",
+      "context": "function process(arr) {\n  let result = 0;\n  for (let i = 0; i < arr.length; i++) {\n    if (arr[i] > result) result = arr[i];\n  }\n  return result;\n}",
+      "options": [
+        "6",
+        "9",
+        "31",
+        "5"
+      ],
+      "answerKey": "B",
+      "rationale": "The function finds the maximum value in the array. The largest element is 9."
+    },
+    {
+      "id": "LR-011",
+      "format": "relationship",
+      "difficulty": "hard",
+      "prompt": "COMPILER is to SOURCE_CODE as INTERPRETER is to ___",
+      "context": "Think about how each processes its input and when execution happens.",
+      "options": [
+        "Machine code",
+        "Bytecode",
+        "Script",
+        "Binary",
+        "Assembly"
+      ],
+      "answerKey": "C",
+      "rationale": "A compiler processes source code (ahead of time). An interpreter processes a script (line by line at runtime)."
+    },
+    {
+      "id": "LR-012",
+      "format": "true_false",
+      "difficulty": "medium",
+      "prompt": "In a single-elimination tournament with 64 players, exactly 63 matches are played to determine a winner.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "answerKey": "A",
+      "rationale": "Each match eliminates exactly one player. To go from 64 to 1 player requires 63 eliminations."
+    }
+  ]
+}

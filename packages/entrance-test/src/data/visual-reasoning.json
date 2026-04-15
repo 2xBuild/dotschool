@@ -1,0 +1,136 @@
+{
+  "setId": "VIS-2026-01",
+  "title": "Visual Reasoning",
+  "category": "visual_test",
+  "language": "English",
+  "targetAudience": "Global students",
+  "timeLimitMinutes": 18,
+  "questions": [
+    {
+      "id": "VIS-001",
+      "format": "matrix_pattern",
+      "difficulty": "medium",
+      "prompt": "In a 3×3 matrix, a triangle rotates 90° clockwise across each row. The second row starts at 180°. What orientation should appear in row 2, column 3?",
+      "hint": "Track the rotation: each cell adds 90° to the previous one in the same row.",
+      "options": [
+        "0 degrees",
+        "90 degrees",
+        "270 degrees",
+        "180 degrees"
+      ],
+      "answerKey": "A",
+      "rationale": "Row 2 pattern: 180, 270, 0."
+    },
+    {
+      "id": "VIS-002",
+      "format": "shape_analogy",
+      "difficulty": "easy",
+      "prompt": "Shape A to B adds one side (triangle → square). Shape C is a pentagon. What is the result of the same transformation?",
+      "options": [
+        "Hexagon",
+        "Square",
+        "Octagon",
+        "Pentagon"
+      ],
+      "answerKey": "A",
+      "rationale": "Adding one side to a pentagon gives a hexagon."
+    },
+    {
+      "id": "VIS-003",
+      "format": "spatial_reasoning",
+      "difficulty": "hard",
+      "prompt": "A cube has opposite faces colored: red–blue, green–yellow, black–white. If red is on top and green faces you, which color is on the bottom?",
+      "options": [
+        "Blue",
+        "Yellow",
+        "White",
+        "Black"
+      ],
+      "answerKey": "A",
+      "rationale": "Red is opposite blue by definition, so blue is on the bottom."
+    },
+    {
+      "id": "VIS-004",
+      "format": "sequence",
+      "difficulty": "medium",
+      "prompt": "Each figure in the sequence adds one dot to the previous pattern, following a spiral path. The first has 1 dot (center), the second has 2 (center + right), the third has 3 (center + right + top-right). How many dots are in the 7th figure?",
+      "options": [
+        "6",
+        "7",
+        "8",
+        "9"
+      ],
+      "answerKey": "B",
+      "rationale": "Each figure simply adds one dot: the nth figure has n dots."
+    },
+    {
+      "id": "VIS-005",
+      "format": "mental_game",
+      "difficulty": "hard",
+      "prompt": "You fold a square piece of paper in half diagonally, then cut a small circle at the folded corner. When you unfold the paper, how many holes do you see?",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "answerKey": "A",
+      "rationale": "Cutting at the folded corner affects only the single corner point. When unfolded, there is 1 hole at the center of the original square."
+    },
+    {
+      "id": "VIS-006",
+      "format": "spatial_reasoning",
+      "difficulty": "medium",
+      "prompt": "You are looking at a clock in a mirror. The mirror shows the time as 2:50. What is the actual time?",
+      "options": [
+        "9:10",
+        "10:10",
+        "9:50",
+        "8:10"
+      ],
+      "answerKey": "A",
+      "rationale": "Mirror reflection of a clock: subtract from 12:00. 12:00 - 2:50 = 9:10."
+    },
+    {
+      "id": "VIS-007",
+      "format": "sequence",
+      "difficulty": "easy",
+      "prompt": "Each step doubles the number of sides in the shape. Step 1: triangle (3), Step 2: hexagon (6), Step 3: ?",
+      "options": [
+        "Nonagon (9 sides)",
+        "Dodecagon (12 sides)",
+        "Decagon (10 sides)",
+        "Octagon (8 sides)"
+      ],
+      "answerKey": "B",
+      "rationale": "3 → 6 → 12. Each step doubles: 6 × 2 = 12 (dodecagon)."
+    },
+    {
+      "id": "VIS-008",
+      "format": "matrix_pattern",
+      "difficulty": "hard",
+      "prompt": "A 3×3 grid contains shapes. Each row has a circle, a square, and a triangle. Each column has a small, medium, and large shape. The center cell is a medium square. What must be in the top-right cell if the top-left is a small circle?",
+      "hint": "Each row and column must have all three shapes and all three sizes.",
+      "options": [
+        "Large triangle",
+        "Medium triangle",
+        "Large circle",
+        "Small square"
+      ],
+      "answerKey": "A",
+      "rationale": "Top row has small circle, so needs square and triangle. Center row has medium square in center. Top row must have medium or large for remaining. By elimination, top-right is large triangle."
+    },
+    {
+      "id": "VIS-009",
+      "format": "true_false",
+      "difficulty": "easy",
+      "prompt": "A shape with exactly 4 sides, where all sides are equal and all angles are 90°, must be a square.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "answerKey": "A",
+      "rationale": "These are the exact defining properties of a square."
+    }
+  ]
+}

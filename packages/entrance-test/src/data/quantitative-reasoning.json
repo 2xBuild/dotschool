@@ -1,0 +1,138 @@
+{
+  "setId": "QR-2026-01",
+  "title": "Quantitative Reasoning",
+  "category": "mental_reasoning",
+  "language": "English",
+  "targetAudience": "Global students",
+  "timeLimitMinutes": 25,
+  "questions": [
+    {
+      "id": "QR-001",
+      "format": "multiple_choice",
+      "difficulty": "easy",
+      "prompt": "A scholarship fund increases by 15% from $20,000. What is the new amount?",
+      "options": [
+        "$22,000",
+        "$23,000",
+        "$24,000",
+        "$25,000"
+      ],
+      "answerKey": "B",
+      "rationale": "15% of 20,000 is 3,000, so total is 23,000."
+    },
+    {
+      "id": "QR-002",
+      "format": "multiple_choice",
+      "difficulty": "medium",
+      "prompt": "The ratio of students in program A to program B is 7:9. If there are 288 students total, how many are in program A?",
+      "options": [
+        "112",
+        "126",
+        "144",
+        "162"
+      ],
+      "answerKey": "B",
+      "rationale": "Total parts = 16. One part = 18. Program A = 7 × 18 = 126."
+    },
+    {
+      "id": "QR-003",
+      "format": "table_interpretation",
+      "difficulty": "hard",
+      "prompt": "A test has sections with different weights. What is the weighted score?",
+      "context": "┌───────────┬────────┬────────┐\n│  Section  │ Weight │ Score  │\n├───────────┼────────┼────────┤\n│  Part A   │  30%   │   78   │\n│  Part B   │  30%   │   84   │\n│  Part C   │  40%   │   90   │\n└───────────┴────────┴────────┘",
+      "options": [
+        "84.0",
+        "84.6",
+        "85.2",
+        "86.4"
+      ],
+      "answerKey": "B",
+      "rationale": "0.3(78) + 0.3(84) + 0.4(90) = 23.4 + 25.2 + 36 = 84.6."
+    },
+    {
+      "id": "QR-004",
+      "format": "mental_game",
+      "difficulty": "medium",
+      "prompt": "You have a 3-liter jug and a 5-liter jug. You need exactly 4 liters. What is the minimum number of pour/fill/empty operations needed?",
+      "hint": "You can fill a jug, empty it, or pour from one to the other.",
+      "options": [
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "answerKey": "C",
+      "rationale": "Fill 5L → Pour into 3L (2L left in 5L) → Empty 3L → Pour 2L from 5L into 3L → Fill 5L → Pour into 3L (1L space) → 4L left in 5L jug. That's 6 operations."
+    },
+    {
+      "id": "QR-005",
+      "format": "code_snippet",
+      "difficulty": "hard",
+      "prompt": "What is the time complexity of this function?",
+      "context": "function findPairs(arr) {\n  const seen = new Set();\n  const pairs = [];\n  for (const x of arr) {\n    if (seen.has(10 - x)) {\n      pairs.push([10 - x, x]);\n    }\n    seen.add(x);\n  }\n  return pairs;\n}",
+      "options": [
+        "O(n²)",
+        "O(n)",
+        "O(n log n)",
+        "O(2ⁿ)"
+      ],
+      "answerKey": "B",
+      "rationale": "Single pass through the array with O(1) Set lookups → O(n) total."
+    },
+    {
+      "id": "QR-006",
+      "format": "sequence",
+      "difficulty": "easy",
+      "prompt": "What is the next number in this pattern?",
+      "context": "1, 1, 2, 3, 5, 8, 13, ?",
+      "options": [
+        "18",
+        "20",
+        "21",
+        "26"
+      ],
+      "answerKey": "C",
+      "rationale": "Fibonacci sequence: each number is the sum of the two before it. 8 + 13 = 21."
+    },
+    {
+      "id": "QR-007",
+      "format": "true_false",
+      "difficulty": "medium",
+      "prompt": "If you flip a fair coin 10 times and get heads every time, the probability of heads on the 11th flip is still 50%.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "answerKey": "A",
+      "rationale": "Each coin flip is independent. Past results do not affect future probabilities."
+    },
+    {
+      "id": "QR-008",
+      "format": "mental_game",
+      "difficulty": "hard",
+      "prompt": "A snail climbs 3 meters during the day but slides back 2 meters at night. The well is 10 meters deep. On which day does the snail reach the top?",
+      "options": [
+        "7th day",
+        "8th day",
+        "9th day",
+        "10th day"
+      ],
+      "answerKey": "B",
+      "rationale": "After 7 days: net progress = 7 × 1 = 7 meters. On day 8, the snail climbs 3 more meters (reaches 10), escaping before nightfall."
+    },
+    {
+      "id": "QR-009",
+      "format": "relationship",
+      "difficulty": "medium",
+      "prompt": "SQUARE is to 4 as HEXAGON is to ___",
+      "options": [
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "answerKey": "B",
+      "rationale": "A square has 4 sides; a hexagon has 6 sides."
+    }
+  ]
+}

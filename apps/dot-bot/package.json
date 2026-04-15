@@ -1,0 +1,25 @@
+{
+  "name": "dot-discord-bot",
+  "version": "1.0.0",
+  "description": "A Discord bot for dot.school with announcements, concerns/voting, user tags, and verification.",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "deploy": "ts-node src/deploy-commands.ts"
+  },
+  "dependencies": {
+    "@repo/db": "*",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.45.1",
+    "postgres": "^3.4.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.4.5"
+  }
+}

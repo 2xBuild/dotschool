@@ -1,0 +1,118 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1774079516808,
+      "tag": "0000_youthful_trauma",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774176183742,
+      "tag": "0001_mature_imperial_guard",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774177639931,
+      "tag": "0002_green_moonstone",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1774200534532,
+      "tag": "0003_illegal_nightmare",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1774205923319,
+      "tag": "0004_pale_galactus",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1774206000000,
+      "tag": "0005_batch_brief_seed",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1774206100000,
+      "tag": "0006_batch_card_icon_keys",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1774251400000,
+      "tag": "0008_batch_number_seats",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1774426869145,
+      "tag": "0008_aromatic_randall",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1774641309305,
+      "tag": "0009_spotty_calypso",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1774642078507,
+      "tag": "0010_huge_maginty",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1774742400000,
+      "tag": "0011_drop_user_profile_tp",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1774746000000,
+      "tag": "0012_add_user_profile_socials",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1774900000000,
+      "tag": "0013_batch_modules_resources",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1775350000000,
+      "tag": "0014_add_interest_vote_direction",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1776062499511,
+      "tag": "0015_breezy_blazing_skull",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "setId": "SJ-2026-01",
+  "title": "Situational Judgment (Global Perspective)",
+  "category": "reasoning_global_perspective",
+  "language": "English",
+  "targetAudience": "Global students",
+  "timeLimitMinutes": 15,
+  "questions": [
+    {
+      "id": "SJ-001",
+      "format": "single_best_response",
+      "difficulty": "medium",
+      "prompt": "Your team spans 4 countries. Meeting times always favor one region. What is the best first action?",
+      "options": [
+        "Keep the same schedule for consistency.",
+        "Rotate meeting times and share async notes.",
+        "Ask one region to always attend late.",
+        "Cancel live meetings permanently."
+      ],
+      "answerKey": "B",
+      "rationale": "Rotation and async documentation improve fairness and participation."
+    },
+    {
+      "id": "SJ-002",
+      "format": "single_best_response",
+      "difficulty": "easy",
+      "prompt": "A teammate struggles with an idiom-heavy instruction message. What should you do?",
+      "options": [
+        "Repeat the same message more loudly.",
+        "Use plain language and confirm understanding.",
+        "Ignore the issue to save time.",
+        "Replace text with slang examples."
+      ],
+      "answerKey": "B",
+      "rationale": "Clear language and confirmation reduce communication barriers."
+    },
+    {
+      "id": "SJ-003",
+      "format": "single_best_response",
+      "difficulty": "hard",
+      "prompt": "An applicant's portfolio is excellent, but internet outages caused a late submission in a low-connectivity region. Best policy-consistent response?",
+      "options": [
+        "Auto-reject late submissions without review.",
+        "Apply a documented exception process with evidence checks.",
+        "Approve all late submissions automatically.",
+        "Ignore submission rules entirely."
+      ],
+      "answerKey": "B",
+      "rationale": "A transparent exception policy balances fairness and standards."
+    },
+    {
+      "id": "SJ-004",
+      "format": "single_best_response",
+      "difficulty": "medium",
+      "prompt": "You discover a critical bug in production on a Friday evening. Your team lead is offline and the on-call engineer is in a different time zone. What do you do?",
+      "options": [
+        "Wait until Monday to report it.",
+        "Fix it yourself and push directly to production without review.",
+        "Document the issue, apply a safe rollback or hotfix, and notify the on-call engineer.",
+        "Post about it on social media to get attention.",
+        "Ignore it since it's not your on-call shift."
+      ],
+      "answerKey": "C",
+      "rationale": "Documentation + safe rollback + alerting on-call balances urgency with process."
+    },
+    {
+      "id": "SJ-005",
+      "format": "true_false",
+      "difficulty": "easy",
+      "prompt": "When giving code review feedback to a teammate from a different cultural background, it's better to be as blunt and direct as possible regardless of cultural norms.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "answerKey": "B",
+      "rationale": "Effective communication adjusts for cultural context while remaining honest. Bluntness without awareness can harm collaboration."
+    },
+    {
+      "id": "SJ-006",
+      "format": "single_best_response",
+      "difficulty": "hard",
+      "prompt": "You're mentoring a junior developer who keeps making the same mistake. You've explained the concept three times. What's your best approach?",
+      "options": [
+        "Explain it a fourth time with the same approach.",
+        "Do the work for them to save time.",
+        "Try a different teaching method — pair program, draw a diagram, or have them explain it back to you.",
+        "Report them to management.",
+        "Tell them to figure it out on their own."
+      ],
+      "answerKey": "C",
+      "rationale": "Different people learn differently. Switching methods (visual, hands-on, teaching back) often breaks through understanding barriers."
+    }
+  ]
+}

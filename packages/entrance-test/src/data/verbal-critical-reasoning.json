@@ -1,0 +1,125 @@
+{
+  "setId": "VR-2026-01",
+  "title": "Verbal and Critical Reasoning",
+  "category": "mental_reasoning",
+  "language": "English",
+  "targetAudience": "Global students",
+  "timeLimitMinutes": 20,
+  "questions": [
+    {
+      "id": "VR-001",
+      "format": "multiple_choice",
+      "difficulty": "medium",
+      "prompt": "Select the best summary: 'Global classrooms improve collaboration when students compare local examples and discuss differences respectfully.'",
+      "options": [
+        "Classrooms should avoid differences.",
+        "Respectful comparison of local contexts strengthens collaboration.",
+        "Only local examples matter in education.",
+        "Collaboration is unrelated to discussion style."
+      ],
+      "answerKey": "B",
+      "rationale": "Option B captures both comparison and respectful discussion."
+    },
+    {
+      "id": "VR-002",
+      "format": "multiple_choice",
+      "difficulty": "easy",
+      "prompt": "Choose the strongest inference: 'Most students who practiced timed mock tests improved their completion rate.'",
+      "options": [
+        "Every student improved completion rate.",
+        "Timed practice can help completion speed for many students.",
+        "Mock tests reduce accuracy for all students.",
+        "Completion rate is impossible to improve."
+      ],
+      "answerKey": "B",
+      "rationale": "The statement supports a likely benefit for many, not all."
+    },
+    {
+      "id": "VR-003",
+      "format": "multiple_choice",
+      "difficulty": "hard",
+      "prompt": "Argument: 'Our online support hours should match one time zone only, because most users live there.' What is the strongest critique?",
+      "options": [
+        "It ignores access equity for minority time zones.",
+        "It is too expensive to change support hours.",
+        "Time zones never affect student outcomes.",
+        "Most users should always be prioritized in every policy."
+      ],
+      "answerKey": "A",
+      "rationale": "The policy may exclude global learners and reduce fair access."
+    },
+    {
+      "id": "VR-004",
+      "format": "code_snippet",
+      "difficulty": "medium",
+      "prompt": "A developer wrote the following commit message. Which option best describes what's wrong with it?",
+      "context": "fix stuff",
+      "options": [
+        "It's too long.",
+        "It's too vague — doesn't describe what was fixed or why.",
+        "It should be in past tense.",
+        "Nothing is wrong with it."
+      ],
+      "answerKey": "B",
+      "rationale": "Good commit messages explain the 'what' and 'why' so teammates can understand changes without reading every diff."
+    },
+    {
+      "id": "VR-005",
+      "format": "relationship",
+      "difficulty": "medium",
+      "prompt": "DEBUG is to ERROR as REFACTOR is to ___",
+      "options": [
+        "Feature",
+        "Bug",
+        "Code smell",
+        "Test",
+        "Deployment"
+      ],
+      "answerKey": "C",
+      "rationale": "Debugging addresses errors; refactoring addresses code smells (structural issues)."
+    },
+    {
+      "id": "VR-006",
+      "format": "true_false",
+      "difficulty": "easy",
+      "prompt": "The sentence 'The data shows that users prefers dark mode' is grammatically correct.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "answerKey": "B",
+      "rationale": "'Users' is plural, so the verb should be 'prefer' not 'prefers'. Correct: 'The data shows that users prefer dark mode.'"
+    },
+    {
+      "id": "VR-007",
+      "format": "multiple_choice",
+      "difficulty": "hard",
+      "prompt": "Read the passage and identify the logical fallacy:",
+      "context": "\"Everyone on our team uses Vim, so Vim must be the best editor for all developers everywhere.\"",
+      "options": [
+        "Ad hominem",
+        "Hasty generalization",
+        "Straw man",
+        "Appeal to authority",
+        "False dilemma"
+      ],
+      "answerKey": "B",
+      "rationale": "Generalizing from one team's preference to all developers is a hasty generalization — the sample is too small and biased."
+    },
+    {
+      "id": "VR-008",
+      "format": "mental_game",
+      "difficulty": "hard",
+      "prompt": "You have 5 sentences that form a logical paragraph, but they're shuffled. Which is the correct order?",
+      "context": "A: Tests caught the regression before it reached users.\nB: The team pushed a refactor to the authentication module.\nC: A subtle bug was introduced in the session validation logic.\nD: The CI pipeline ran the full test suite automatically.\nE: The developer opened a fix PR within 30 minutes.",
+      "options": [
+        "B, C, D, A, E",
+        "B, D, C, A, E",
+        "C, B, D, E, A",
+        "D, B, C, A, E"
+      ],
+      "answerKey": "A",
+      "rationale": "Logical flow: team pushes refactor (B) → bug introduced (C) → CI runs tests (D) → tests catch it (A) → developer fixes (E)."
+    }
+  ]
+}
