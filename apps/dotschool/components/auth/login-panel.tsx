@@ -1,8 +1,9 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
-import { SiApple, SiDiscord, SiGithub } from "react-icons/si";
+import { SiDiscord, SiGithub, SiX } from "react-icons/si";
 import type { IconType } from "react-icons";
 
 import { Logo } from "@/components/brand/logo";
@@ -23,10 +24,10 @@ const providers = [
     iconClassName: "text-[#24292f] dark:text-white",
   },
   {
-    id: "apple" as const,
-    label: "Apple",
-    Icon: SiApple,
-    iconClassName: "text-[#111111] dark:text-white",
+    id: "twitter" as const,
+    label: "X",
+    Icon: SiX,
+    iconClassName: "text-[#000000] dark:text-white",
   },
   {
     id: "discord" as const,
@@ -35,7 +36,7 @@ const providers = [
     iconClassName: "text-[#5865f2]",
   },
 ] as const satisfies ReadonlyArray<{
-  id: "google" | "github" | "apple" | "discord";
+  id: "google" | "github" | "twitter" | "discord";
   label: string;
   Icon: IconType;
   iconClassName: string;
@@ -51,6 +52,10 @@ export function LoginPanel({
   className,
 }: LoginPanelProps) {
   const [playClick] = useClickSound();
+  const searchParams = useSearchParams();
+  const errorType = searchParams.get("error");
+  const existingProvider = searchParams.get("provider");
+
   return (
     <div
       className={cn(
@@ -68,6 +73,14 @@ export function LoginPanel({
           Login with any of the given method
         </p>
       </div>
+
+      {errorType === "EmailExists" && existingProvider && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-center text-sm text-red-700 dark:border-red-800 dark:bg-red-950/50 dark:text-red-400">
+          This email is already registered with{" "}
+          <span className="font-semibold">{existingProvider}</span>. Please
+          login with {existingProvider} instead.
+        </div>
+      )}
 
       <div className="space-y-2">
         {providers.map(({ id, label, Icon, iconClassName }) => (

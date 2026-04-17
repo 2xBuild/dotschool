@@ -1,4 +1,5 @@
 import NextAuth from "next-auth";
+import { and, eq, ne } from "drizzle-orm";
 import { createBaseAuthConfig } from "@repo/auth";
 
 import { db } from "@/server/db";
@@ -11,6 +12,13 @@ import {
 } from "@/server/db/schema";
 import { buildDefaultUsername } from "@/server/profile/username";
 
+const providerLabels: Record<string, string> = {
+  google: "Google",
+  github: "GitHub",
+  twitter: "X",
+  discord: "Discord",
+};
+
 const baseConfig = createBaseAuthConfig(db, {
   usersTable: users,
   accountsTable: accounts,
@@ -20,8 +28,58 @@ const baseConfig = createBaseAuthConfig(db, {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...baseConfig,
+  pages: {
+    error: "/login",
+  },
   callbacks: {
     ...baseConfig.callbacks,
+    async signIn({ user, account }) {
+      const email = user.email?.trim().toLowerCase();
+      if (!email || !account) return true;
+
+      // Check if this email is already registered with a different provider
+      const existingUser = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.email, email))
+        .limit(1);
+
+      if (existingUser.length > 0) {
+        const existingAccount = await db
+          .select({ provider: accounts.provider })
+          .from(accounts)
+          .where(
+            and(
+              eq(accounts.userId, existingUser[0].id),
+              ne(accounts.provider, account.provider),
+            ),
+          )
+          .limit(1);
+
+        if (
+          existingAccount.length > 0 &&
+          // Allow sign-in if this provider is already linked
+          !(await db
+            .select({ provider: accounts.provider })
+            .from(accounts)
+            .where(
+              and(
+                eq(accounts.userId, existingUser[0].id),
+                eq(accounts.provider, account.provider),
+              ),
+            )
+            .limit(1)
+          ).length
+        ) {
+          const label =
+            providerLabels[existingAccount[0].provider] ??
+            existingAccount[0].provider;
+          return `/login?error=EmailExists&provider=${encodeURIComponent(label)}`;
+        }
+      }
+
+      return true;
+    },
     async redirect({ url, baseUrl }) {
       if (url.startsWith("/")) {
         return `${baseUrl}${url}`;
