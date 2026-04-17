@@ -125,46 +125,51 @@ function VisualArt({ visual }: { visual: HowItWorksVisual }) {
     case "apply":
       return (
         <div className="relative flex h-full w-full items-center justify-center">
-          <div className="w-full max-w-[30rem] space-y-3">
+          <div className="w-full max-w-[28rem] overflow-hidden rounded-xl border border-white/15">
             {[
-              { name: "Web Development", slots: "400 seats" },
-              { name: "AI Engineer", slots: "500 seats", active: true },
-              { name: "Complete DSA", slots: "800 seats" },
-              { name: "Chesscamp: 200 to 2000 elo", slots: "1000 seats" },
-            ].map((batch) => (
+              { name: "Web Development", seats: 400, status: "Open" },
+              { name: "AI Engineer", seats: 500, status: "Open", active: true },
+              { name: "Complete DSA", seats: 800, status: "Closed" },
+              { name: "Chess: 200 to 2000 elo", seats: 1000, status: "Soon" },
+            ].map((batch, i) => (
               <div
                 key={batch.name}
                 className={cn(
-                  "flex items-center justify-between rounded-2xl px-5 py-3.5 transition-colors",
-                  batch.active
-                    ? "border border-white bg-white/10"
-                    : "border border-white/15 bg-transparent",
+                  "flex items-center justify-between px-5 py-3.5",
+                  i > 0 && "border-t border-white/10",
+                  batch.active ? "bg-white/10" : "",
                 )}
               >
+                <span
+                  className={cn(
+                    "text-[0.82rem]",
+                    batch.active ? "font-medium text-white" : "text-white/50",
+                  )}
+                >
+                  {batch.name}
+                </span>
                 <div className="flex items-center gap-3">
                   <span
                     className={cn(
-                      "size-2 rounded-full",
-                      batch.active ? "bg-white" : "bg-white/30",
-                    )}
-                  />
-                  <span
-                    className={cn(
-                      "text-sm",
-                      batch.active ? "text-white" : "text-white/60",
+                      "text-[0.6rem] tabular-nums uppercase tracking-wider",
+                      batch.active ? "text-white/60" : "text-white/30",
                     )}
                   >
-                    {batch.name}
+                    {batch.seats}
+                  </span>
+                  <span
+                    className={cn(
+                      "rounded-full px-2.5 py-1 text-[0.55rem] font-medium uppercase tracking-wider",
+                      batch.status === "Open" && batch.active
+                        ? "bg-white/20 text-white"
+                        : batch.status === "Open"
+                          ? "bg-white/8 text-white/40"
+                          : "bg-white/5 text-white/25",
+                    )}
+                  >
+                    {batch.status}
                   </span>
                 </div>
-                <span
-                  className={cn(
-                    "text-[0.65rem] uppercase tracking-wider",
-                    batch.active ? "text-white/80" : "text-white/40",
-                  )}
-                >
-                  {batch.slots}
-                </span>
               </div>
             ))}
           </div>
@@ -245,38 +250,34 @@ function VisualArt({ visual }: { visual: HowItWorksVisual }) {
     case "selection":
       return (
         <div className="relative flex h-full w-full items-center justify-center">
-          <div className="w-full max-w-[30rem] space-y-2">
+          <div className="w-full max-w-[28rem] overflow-hidden rounded-xl border border-white/15">
             {[
-              { rank: "01", selected: true },
-              { rank: "02", selected: true },
-              { rank: "03", selected: true },
-              { rank: "04", selected: false },
-              { rank: "05", selected: false },
-            ].map((row) => (
+              { rank: "01", score: "18/20", selected: true },
+              { rank: "02", score: "17/20", selected: true },
+              { rank: "03", score: "16/20", selected: true },
+              { rank: "04", score: "14/20", selected: false },
+              { rank: "05", score: "12/20", selected: false },
+            ].map((row, i) => (
               <div
                 key={row.rank}
                 className={cn(
-                  "flex items-center gap-4 rounded-xl px-4 py-3 transition-opacity",
-                  row.selected
-                    ? "border border-white/30 bg-white/10"
-                    : "border border-dashed border-white/15 opacity-40",
+                  "flex items-center gap-4 px-5 py-3",
+                  i > 0 && "border-t border-white/10",
+                  row.selected ? "bg-white/8" : "opacity-35",
                 )}
               >
-                <span className="text-[0.7rem] tabular-nums text-white/60">
+                <span className="w-5 text-[0.7rem] font-medium tabular-nums text-white/50">
                   {row.rank}
                 </span>
-                <div className="flex-1">
-                  <div
-                    className={cn(
-                      "h-2 rounded-full",
-                      row.selected ? "w-32 bg-white/40" : "w-24 bg-white/15",
-                    )}
-                  />
-                </div>
-                {row.selected ? (
+                <div className="h-1.5 w-20 rounded-full bg-white/20 sm:w-28" />
+                <div className="flex-1" />
+                <span className="text-[0.65rem] tabular-nums tracking-wider text-white/45">
+                  {row.score}
+                </span>
+                {row.selected && (
                   <svg
                     viewBox="0 0 24 24"
-                    className="size-4 text-white"
+                    className="size-3.5 text-white"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2.5"
@@ -285,8 +286,6 @@ function VisualArt({ visual }: { visual: HowItWorksVisual }) {
                   >
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
-                ) : (
-                  <span className="size-4" />
                 )}
               </div>
             ))}

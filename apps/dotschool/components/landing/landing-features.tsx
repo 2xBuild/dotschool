@@ -20,6 +20,7 @@ interface Feature {
   key: string;
   content: React.ReactNode;
   span?: 2;
+  blue?: boolean;
 }
 
 const cardBase =
@@ -108,10 +109,11 @@ const features: Feature[] = [
   {
     key: "paths",
     span: 2,
+    blue: true,
     content: (
       <div className="flex flex-col items-center gap-1.5" style={cardFont}>
-        <p className="text-sm uppercase tracking-widest text-[#555] lg:max-w-md lg:text-base">
-          Learn by building <span className="font-bold">real-world</span> projects. Earn <span className="font-bold">rewards</span>, certificates and <span className="font-bold">reputation</span> that matters. </p>
+        <p className="text-sm uppercase tracking-widest text-white/90 lg:max-w-md lg:text-base">
+          Learn by building <span className="font-bold text-white">real-world</span> projects. Earn <span className="font-bold text-white">rewards</span>, certificates and <span className="font-bold text-white">reputation</span> that matters. </p>
       </div>
     ),
   },
@@ -273,7 +275,7 @@ export function LandingFeatures() {
             variants={cardVariants}
             custom={i}
           >
-            <div className={cardBase}>{feature.content}</div>
+            <div className={feature.blue ? `${cardBase} border-transparent bg-[linear-gradient(180deg,#3158ff_0%,#1f49ff_60%,#2552ff_100%)] text-white` : cardBase}>{feature.content}</div>
           </motion.div>
         ))}
       </motion.div>

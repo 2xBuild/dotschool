@@ -4,7 +4,7 @@ import { ArrowUpRight, Plus } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { SoundLink } from "@/components/landing/sound-link";
 
-import { SmartCityIllus } from "./smart-city-illus";
+import { StudyIllus } from "./study-illus";
 
 const navButtonSize = "inline-flex h-9 items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold";
 
@@ -41,7 +41,7 @@ export function LandingHeroBlock() {
               <p
                 className="pixel-kicker text-[0.72rem] font-medium uppercase tracking-[0.28em] text-white/68 sm:text-xs"
               >
-                Free & community-driven school to 
+                only platform to 
               </p>
               <h1
                 id="landing-hero-heading"
@@ -54,7 +54,7 @@ export function LandingHeroBlock() {
                 className="mt-4 max-w-sm text-pretty text-md leading-6 text-white/80 sm:max-w-lg sm:text-base"
                 style={{ fontFamily: "var(--font-open-sauce)" }}
               >
-                with cracked peers and mentors, by building real world projects with fun, prizes and competitions.
+                with cracked peers and mentors. build, compete, chill, climb leaderboard and earn prizes, recognition.
               </p>
               <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
                 <SoundLink
@@ -82,8 +82,8 @@ export function LandingHeroBlock() {
               </div>
             </div>
 
-            <div className="pointer-events-none absolute -bottom-px left-1/2 z-20 w-[min(100vw,1140px)] -translate-x-1/2 opacity-90 sm:bottom-0 sm:w-[min(96vw,1180px)] lg:-bottom-10 lg:w-[1120px]">
-              <SmartCityIllus className="w-full" />
+            <div className="pointer-events-none absolute -bottom-px left-1/2 z-20 w-[100vw] -translate-x-1/2 opacity-90 sm:bottom-0 lg:-bottom-10">
+              <StudyIllus className="w-full" />
             </div>
           </div>
         </div>
