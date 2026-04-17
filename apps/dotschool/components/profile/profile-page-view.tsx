@@ -34,7 +34,7 @@ type ProfileData = {
 
 type ProfilePageViewProps = {
   displayName: string;
-  email: string;
+  email: string | null;
   avatarUrl: string | null;
   canManageSupport: boolean;
   profile: ProfileData | null;

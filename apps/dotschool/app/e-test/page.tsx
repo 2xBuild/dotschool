@@ -24,14 +24,11 @@ export default async function ETestPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect("/login?redirectTo=/e-test");
   }
 
-  const email = session.user.email?.trim().toLowerCase();
-  if (!email) {
-    redirect("/login?redirectTo=/e-test");
-  }
+  const email = session.user.email?.trim().toLowerCase() ?? null;
 
   const { batch: batchParam, type: typeParam, desc: descParam } = await searchParams;
   const batchId = typeof batchParam === "string" ? batchParam : null;
@@ -47,7 +44,7 @@ export default async function ETestPage({
   }
 
   const userRecord = await db.query.users.findFirst({
-    where: eq(users.email, email),
+    where: eq(users.id, session.user.id),
     columns: { id: true, name: true, image: true },
   });
 

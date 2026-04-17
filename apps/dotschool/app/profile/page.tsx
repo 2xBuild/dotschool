@@ -8,19 +8,15 @@ import { getProfilePageData } from "@/server/profile/queries";
 
 export default async function ProfilePage() {
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect("/login?redirectTo=/profile");
   }
 
-  const email = session.user.email?.trim().toLowerCase();
-  if (!email) {
-    redirect("/login?redirectTo=/profile");
-  }
-
-  const { profile, canManageSupport } = await getProfilePageData(email);
+  const email = session.user.email?.trim().toLowerCase() ?? null;
+  const { profile, canManageSupport } = await getProfilePageData(session.user.id);
 
   const displayName =
-    profile?.name?.trim() || session.user.name?.trim() || email.split("@")[0] || "Learner";
+    profile?.name?.trim() || session.user.name?.trim() || email?.split("@")[0] || "Learner";
   const avatarUrl = profile?.image?.trim() || session.user.image?.trim() || null;
 
   return (

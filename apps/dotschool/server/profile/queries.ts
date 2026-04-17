@@ -3,23 +3,15 @@ import "server-only";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/server/db";
-import { userProfiles, users } from "@/server/db/schema";
+import { userProfiles } from "@/server/db/schema";
 import { canUserManageProfileSupport } from "@/server/profile/support-access";
 
-export async function getProfilePageData(email: string) {
-  const [profile, userRecord] = await Promise.all([
-    db.query.userProfiles.findFirst({
-      where: eq(userProfiles.email, email),
-    }),
-    db.query.users.findFirst({
-      where: eq(users.email, email),
-      columns: { id: true },
-    }),
-  ]);
+export async function getProfilePageData(userId: string) {
+  const profile = await db.query.userProfiles.findFirst({
+    where: eq(userProfiles.userId, userId),
+  });
 
-  const canManageSupport = userRecord
-    ? await canUserManageProfileSupport(userRecord.id)
-    : false;
+  const canManageSupport = await canUserManageProfileSupport(userId);
 
   return { canManageSupport, profile: profile ?? null };
 }

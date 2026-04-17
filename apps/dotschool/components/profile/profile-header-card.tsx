@@ -28,7 +28,7 @@ type Socials = {
 
 type ProfileHeaderCardProps = {
   displayName: string;
-  email: string;
+  email: string | null;
   avatarUrl: string | null;
   canManageSupport: boolean;
   username: string | null;
@@ -226,7 +226,7 @@ export function ProfileHeaderCard({
               >
                 {username ? `@${username}` : "No username"}
               </p>
-              <p className="truncate text-sm text-muted-foreground">{email}</p>
+              {email && <p className="truncate text-sm text-muted-foreground">{email}</p>}
               {providerLabel ? (
                 <div className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
                   <BadgeCheck className="size-3.5" />
