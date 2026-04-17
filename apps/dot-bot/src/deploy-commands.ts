@@ -13,47 +13,40 @@
 
 import 'dotenv/config';
 import { REST, Routes, RESTPutAPIApplicationGuildCommandsResult } from 'discord.js';
+import commands from './commands';
 
-import announceCommand from './commands/announce';
-import concernCommand from './commands/concern';
-import helpCommand from './commands/help';
-import rulesCommand from './commands/rules';
-import tagCommand from './commands/tag';
-import verifyCommand from './commands/verify';
+export async function deployCommands(): Promise<RESTPutAPIApplicationGuildCommandsResult> {
+  const { DISCORD_TOKEN, CLIENT_ID, GUILD_ID } = process.env;
 
-const { DISCORD_TOKEN, CLIENT_ID, GUILD_ID } = process.env;
+  if (!DISCORD_TOKEN || !CLIENT_ID || !GUILD_ID) {
+    throw new Error(
+      '[deploy-commands] Missing one or more required env vars: DISCORD_TOKEN, CLIENT_ID, GUILD_ID'
+    );
+  }
 
-if (!DISCORD_TOKEN || !CLIENT_ID || !GUILD_ID) {
-  console.error(
-    '[deploy-commands] Missing one or more required env vars: DISCORD_TOKEN, CLIENT_ID, GUILD_ID'
+  const rest = new REST({ version: '10' }).setToken(DISCORD_TOKEN);
+  const commandPayload = commands.map((cmd) => cmd.data.toJSON());
+
+  console.log(
+    `[deploy-commands] Registering ${commandPayload.length} slash command(s) to guild ${GUILD_ID}...`,
   );
-  process.exit(1);
+
+  const data = (await rest.put(
+    Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
+    { body: commandPayload }
+  )) as RESTPutAPIApplicationGuildCommandsResult;
+
+  console.log(`[deploy-commands] Successfully registered ${data.length} command(s):`);
+  data.forEach((cmd) => console.log(`  /${cmd.name}`));
+
+  return data;
 }
 
-const commands = [
-  announceCommand,
-  concernCommand,
-  helpCommand,
-  rulesCommand,
-  tagCommand,
-  verifyCommand,
-].map((cmd) => cmd.data.toJSON());
+const isDirectRun = process.argv[1]?.includes('deploy-commands.');
 
-const rest = new REST({ version: '10' }).setToken(DISCORD_TOKEN);
-
-(async () => {
-  try {
-    console.log(`[deploy-commands] Registering ${commands.length} slash command(s) to guild ${GUILD_ID}...`);
-
-    const data = (await rest.put(
-      Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
-      { body: commands }
-    )) as RESTPutAPIApplicationGuildCommandsResult;
-
-    console.log(`[deploy-commands] Successfully registered ${data.length} command(s):`);
-    data.forEach((cmd) => console.log(`  /${cmd.name}`));
-  } catch (err) {
+if (isDirectRun) {
+  deployCommands().catch((err) => {
     console.error('[deploy-commands] Failed to register commands:', err);
     process.exit(1);
-  }
-})();
+  });
+}
