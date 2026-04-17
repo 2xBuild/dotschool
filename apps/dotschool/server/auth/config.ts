@@ -28,7 +28,7 @@ const baseConfig = createBaseAuthConfig(db, {
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...baseConfig,
   pages: {
-    error: "/login",
+    error: "/auth/error",
   },
   callbacks: {
     ...baseConfig.callbacks,
@@ -73,7 +73,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const label =
             providerLabels[existingAccount[0].provider] ??
             existingAccount[0].provider;
-          return `/login?error=EmailExists&provider=${encodeURIComponent(label)}`;
+          return `/auth/error?error=EmailExists&provider=${encodeURIComponent(label)}`;
         }
       }
 

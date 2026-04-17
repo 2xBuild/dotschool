@@ -1,6 +1,5 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
 import { SiDiscord, SiGithub } from "react-icons/si";
@@ -46,9 +45,6 @@ export function LoginPanel({
   className,
 }: LoginPanelProps) {
   const [playClick] = useClickSound();
-  const searchParams = useSearchParams();
-  const errorType = searchParams.get("error");
-  const existingProvider = searchParams.get("provider");
 
   return (
     <div
@@ -67,14 +63,6 @@ export function LoginPanel({
           Login with any of the given method
         </p>
       </div>
-
-      {errorType === "EmailExists" && existingProvider && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-center text-sm text-red-700 dark:border-red-800 dark:bg-red-950/50 dark:text-red-400">
-          This email is already registered with{" "}
-          <span className="font-semibold">{existingProvider}</span>. Please
-          login with {existingProvider} instead.
-        </div>
-      )}
 
       <div className="space-y-2">
         {providers.map(({ id, label, Icon, iconClassName }) => (
