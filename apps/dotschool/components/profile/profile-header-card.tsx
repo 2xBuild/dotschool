@@ -8,6 +8,7 @@ import { SiDiscord, SiX } from "react-icons/si";
 import { Button } from "@repo/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/card";
 import { SubmitStatusButton } from "@/components/ui/status-button";
+import { DISCORD_INVITE_URL } from "@/lib/discord";
 import { cn } from "@/lib/utils";
 import { useClickSound, useSoftClickSound } from "@/hooks/use-app-sound";
 
@@ -314,7 +315,7 @@ export function ProfileHeaderCard({
               placeholder="Not added"
               isEditing={isEditing}
               inputName="discordUsername"
-              linkHref="https://discord.gg/dotschool"
+              linkHref={DISCORD_INVITE_URL}
               linkLabel="Join"
             />
 

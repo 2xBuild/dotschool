@@ -5,14 +5,13 @@ import { useState, useTransition } from "react";
 import { SiDiscord } from "react-icons/si";
 
 import { updateDiscordUsername } from "@/server/profile/actions";
+import { DISCORD_INVITE_URL } from "@/lib/discord";
 import { cn } from "@/lib/utils";
 import { useClickSound } from "@/hooks/use-app-sound";
 
 type DiscordJoinButtonProps = {
   discordUsername: string | null;
 };
-
-const DISCORD_INVITE_URL = "https://discord.gg/dotschool";
 
 export function DiscordJoinButton({ discordUsername }: DiscordJoinButtonProps) {
   const [showForm, setShowForm] = useState(false);
