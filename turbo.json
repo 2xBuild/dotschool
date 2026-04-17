@@ -14,8 +14,6 @@
         "AUTH_GOOGLE_ID",
         "AUTH_GOOGLE_SECRET",
         "AUTH_SECRET",
-        "AUTH_TWITTER_ID",
-        "AUTH_TWITTER_SECRET",
         "AUTH_URL",
         "BOT_WEBHOOK_SECRET",
         "BOT_WEBHOOK_URL",

@@ -2,10 +2,9 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import Discord from "next-auth/providers/discord";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
-import Twitter from "next-auth/providers/twitter";
 import type { NextAuthConfig } from "next-auth";
 
-export const providers = [Google, GitHub, Twitter, Discord];
+export const providers = [Google, GitHub, Discord];
 
 /**
  * Creates a base NextAuth config with shared defaults (providers, adapter,

@@ -15,7 +15,6 @@ import { buildDefaultUsername } from "@/server/profile/username";
 const providerLabels: Record<string, string> = {
   google: "Google",
   github: "GitHub",
-  twitter: "X",
   discord: "Discord",
 };
 

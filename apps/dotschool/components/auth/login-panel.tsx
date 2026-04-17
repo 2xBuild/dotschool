@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
-import { SiDiscord, SiGithub, SiX } from "react-icons/si";
+import { SiDiscord, SiGithub } from "react-icons/si";
 import type { IconType } from "react-icons";
 
 import { Logo } from "@/components/brand/logo";
@@ -24,19 +24,13 @@ const providers = [
     iconClassName: "text-[#24292f] dark:text-white",
   },
   {
-    id: "twitter" as const,
-    label: "X",
-    Icon: SiX,
-    iconClassName: "text-[#000000] dark:text-white",
-  },
-  {
     id: "discord" as const,
     label: "Discord",
     Icon: SiDiscord,
     iconClassName: "text-[#5865f2]",
   },
 ] as const satisfies ReadonlyArray<{
-  id: "google" | "github" | "twitter" | "discord";
+  id: "google" | "github" | "discord";
   label: string;
   Icon: IconType;
   iconClassName: string;
