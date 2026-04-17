@@ -15,7 +15,6 @@ import {
   botMembers,
   entranceTestSessions,
   userProfiles,
-  users,
 } from "@/server/db/schema";
 import { resolveEntranceQuestionSetId } from "@repo/entrance-test";
 
@@ -81,9 +80,9 @@ function toBatchTabItem(row: {
   };
 }
 
-export async function getDashboardData(email: string) {
+export async function getDashboardData(userId: string) {
   const profile = await db.query.userProfiles.findFirst({
-    where: eq(userProfiles.email, email),
+    where: eq(userProfiles.userId, userId),
     columns: {
       name: true,
       username: true,
@@ -103,10 +102,7 @@ export async function getDashboardData(email: string) {
     isInDiscordServer = !!member;
   }
 
-  const userRow = await db.query.users.findFirst({
-    where: eq(users.email, email),
-    columns: { id: true },
-  });
+  const userRow = { id: userId };
 
   const now = new Date();
   let upcomingRows: BatchRow[] = [];

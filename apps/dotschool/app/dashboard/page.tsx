@@ -12,16 +12,11 @@ export default async function DashboardPage({
   const session = await auth();
   const { error: errorParam } = await searchParams;
 
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect("/login?redirectTo=/dashboard");
   }
 
-  const email = session.user.email?.trim().toLowerCase();
-  if (!email) {
-    redirect("/login?redirectTo=/dashboard");
-  }
-
-  const data = await getDashboardData(email);
+  const data = await getDashboardData(session.user.id);
 
   const error = typeof errorParam === "string" ? errorParam : null;
 
