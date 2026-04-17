@@ -24,7 +24,7 @@ interface Feature {
 }
 
 const cardBase =
-  "flex h-full flex-col items-center justify-center rounded-2xl border border-[#1f49ff]/10 bg-transparent p-6 text-center";
+  "flex h-full flex-col items-center justify-center rounded-2xl border border-[#1f49ff]/20 bg-transparent p-6 text-center";
 const cardFont: React.CSSProperties = {
   fontFamily: "var(--font-mono)",
 };
@@ -39,13 +39,13 @@ const features: Feature[] = [
             {Array.from({ length: 3 }).map((_, i) => (
               <div
                 key={i}
-                className="flex size-8 items-center justify-center rounded-full border border-[#1f49ff]/20 bg-[#1f49ff]/10"
+                className="flex size-8 items-center justify-center rounded-full border border-[#1f49ff]/15 bg-[#1f49ff]/5"
               >
-                <div className="size-3.5 rounded-full bg-[#1f49ff]/40" />
+                <div className="size-3.5 rounded-full bg-[#1f49ff]/25" />
               </div>
             ))}
           </div>
-          <span className="rounded-full bg-[#1f49ff]/10 px-3 py-1 text-[0.6rem] font-bold uppercase tracking-wider text-[#1f49ff]" style={cardFont}>
+          <span className="rounded-full bg-[#1f49ff]/5 px-3 py-1 text-[0.6rem] font-bold uppercase tracking-wider text-[#1f49ff]/70" style={cardFont}>
             Limited spots
           </span>
         </div>
@@ -97,7 +97,7 @@ const features: Feature[] = [
             key={item.label}
             className="flex flex-col items-center justify-center gap-3 px-6 py-4"
           >
-            <div className="text-[#1f49ff]">{item.icon}</div>
+            <div className="text-[#1f49ff]/50">{item.icon}</div>
             <span className="text-xs font-semibold uppercase tracking-wider text-[#555]" style={cardFont}>
               {item.label}
             </span>
@@ -147,11 +147,11 @@ const features: Feature[] = [
     key: "free",
     content: (
       <div className="flex items-center justify-center gap-4">
-        <span className="text-6xl font-extrabold leading-none tracking-tighter text-[#1f49ff]" style={cardFont}>
+        <span className="text-6xl font-extrabold leading-none tracking-tighter text-[#1f49ff]/60" style={cardFont}>
           $0
         </span>
         <div className="flex flex-col items-start gap-1 leading-tight">
-          <span className="text-[0.7rem] font-semibold uppercase tracking-widest text-[#1f49ff]" style={cardFont}>
+          <span className="text-[0.7rem] font-semibold uppercase tracking-widest text-[#1f49ff]/70" style={cardFont}>
             Free forever
           </span>
           <span className="text-[0.7rem] font-semibold uppercase tracking-widest text-[#555]" style={cardFont}>
@@ -222,7 +222,7 @@ const features: Feature[] = [
           ].map((item) => (
             <div
               key={item.label}
-              className="flex items-center gap-1 rounded-full border border-[#1f49ff]/15 bg-[#1f49ff]/[0.04] px-2 py-1 text-[#1f49ff] lg:gap-2 lg:px-4 lg:py-2"
+              className="flex items-center gap-1 rounded-full border border-[#1f49ff]/10 bg-[#1f49ff]/[0.03] px-2 py-1 text-[#1f49ff]/50 lg:gap-2 lg:px-4 lg:py-2"
             >
               {item.icon}
               <span className="text-[0.6rem] font-semibold uppercase tracking-wider lg:text-xs" style={cardFont}>
