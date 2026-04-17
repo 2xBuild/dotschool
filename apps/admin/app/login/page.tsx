@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
-import { SiApple, SiDiscord, SiGithub } from "react-icons/si";
+import { SiDiscord, SiGithub } from "react-icons/si";
 
 import { Logo } from "@/components/brand/logo";
 import { ThemeToggle } from "@/components/site/theme-toggle";
@@ -15,12 +15,6 @@ const providers = [
     label: "GitHub",
     Icon: SiGithub,
     iconCls: "text-[#24292f] dark:text-white",
-  },
-  {
-    id: "apple",
-    label: "Apple",
-    Icon: SiApple,
-    iconCls: "text-[#111111] dark:text-white",
   },
   {
     id: "discord",
