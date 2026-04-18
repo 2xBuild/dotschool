@@ -48,6 +48,12 @@ async function main(): Promise<void> {
 
   client.on('error', (err) => console.error('[Client] Error:', err));
   client.on('warn', (msg) => console.warn('[Client] Warning:', msg));
+  client.rest.on('rateLimited', (info) => console.warn('[Client] Rate limited:', info));
+  client.on('debug', (msg) => {
+    if (msg.includes('Heartbeat') || msg.includes('Session')) {
+      console.log('[Debug]', msg);
+    }
+  });
 
   console.log('[Startup] Logging in to Discord...');
   await client.login(config.discordToken);
