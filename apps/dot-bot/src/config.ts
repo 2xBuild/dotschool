@@ -3,8 +3,7 @@ import 'dotenv/config';
 function required(name: string): string {
   const value = process.env[name];
   if (!value) {
-    console.error(`[Config] Missing required env var: ${name}`);
-    process.exit(1);
+    throw new Error(`[Config] Missing required env var: ${name}`);
   }
   return value;
 }

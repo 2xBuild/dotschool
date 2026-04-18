@@ -1,3 +1,4 @@
+console.log('[Boot] Process starting...');
 import { config } from './config';
 import { Client, Collection, GatewayIntentBits, Partials } from 'discord.js';
 import type { Command } from './types';
@@ -6,6 +7,8 @@ import * as readyEvent from './events/ready';
 import * as guildMemberAddEvent from './events/guildMemberAdd';
 import * as interactionCreateEvent from './events/interactionCreate';
 import { startServer } from './server';
+
+console.log('[Boot] All modules loaded');
 
 const client = new Client({
   intents: [
