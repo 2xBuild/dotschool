@@ -5,6 +5,7 @@ import {
   Role,
 } from 'discord.js';
 import { findDotschoolUserByDiscordUsername, upsertVerifiedUser } from '../database/db';
+import { findOrCreateRole } from './roles';
 
 export const VERIFIED_ROLE_NAME = 'verified';
 const GENERAL_CHANNEL_NAME = 'general';
@@ -14,19 +15,7 @@ export function normalizeDiscordUsername(value: string): string {
 }
 
 export async function ensureVerifiedRole(guild: Guild): Promise<Role> {
-  await guild.roles.fetch();
-
-  const existing = guild.roles.cache.find(
-    (role) => role.name.toLowerCase() === VERIFIED_ROLE_NAME,
-  );
-  if (existing) {
-    return existing;
-  }
-
-  return guild.roles.create({
-    name: VERIFIED_ROLE_NAME,
-    reason: 'Required for verified dotschool members',
-  });
+  return findOrCreateRole(guild, VERIFIED_ROLE_NAME, 'Required for verified dotschool members');
 }
 
 export async function lockGeneralToVerified(guild: Guild, verifiedRole: Role): Promise<boolean> {

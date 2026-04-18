@@ -3,10 +3,10 @@ import {
   ChatInputCommandInteraction,
   PermissionFlagsBits,
   EmbedBuilder,
-  Role,
   MessageFlags,
 } from 'discord.js';
 import { addTag, removeTag, getTagsForUser } from '../database/db';
+import { findRole } from '../lib/roles';
 import { Command } from '../types';
 
 export const command: Command = {
@@ -149,35 +149,29 @@ async function syncRole(
   interaction: ChatInputCommandInteraction,
   targetUserId: string,
   tag: string,
-  action: 'add' | 'remove'
+  action: 'add' | 'remove',
 ): Promise<SyncResult> {
   if (!interaction.guild) {
     return { success: false, reason: 'Not in a guild.' };
   }
 
-  const role = interaction.guild.roles.cache.find(
-    (r: Role) => r.name.toLowerCase() === tag.toLowerCase()
-  );
-
+  const role = await findRole(interaction.guild, tag);
   if (!role) {
-    return {
-      success: false,
-      reason: `No Discord role named \`${tag}\` found. Role sync skipped.`,
-    };
+    return { success: false, reason: `No Discord role named \`${tag}\` found.` };
   }
 
   try {
     const member = await interaction.guild.members.fetch(targetUserId);
 
     if (action === 'add') {
-      await member.roles.add(role, `Tag \`${tag}\` added by ${interaction.user.tag}`);
+      await member.roles.add(role, `Tag "${tag}" added by ${interaction.user.tag}`);
     } else {
-      await member.roles.remove(role, `Tag \`${tag}\` removed by ${interaction.user.tag}`);
+      await member.roles.remove(role, `Tag "${tag}" removed by ${interaction.user.tag}`);
     }
 
     return { success: true };
   } catch (err) {
-    console.error('[tag] Role sync failed:', err);
+    console.error('[Tag] Role sync failed:', err);
     return {
       success: false,
       reason: 'Could not modify role — check bot role hierarchy and permissions.',

@@ -1,21 +1,12 @@
-import 'dotenv/config';
+import { config } from './config';
 import { Client, Collection, GatewayIntentBits, Partials } from 'discord.js';
-import { Command } from './types';
+import type { Command } from './types';
 import commands from './commands';
 import { deployCommands } from './deploy-commands';
-
 import * as readyEvent from './events/ready';
 import * as guildMemberAddEvent from './events/guildMemberAdd';
 import * as interactionCreateEvent from './events/interactionCreate';
-
-import { startWebhookServer } from './webhook';
-
-const { DISCORD_TOKEN } = process.env;
-
-if (!DISCORD_TOKEN) {
-  console.error('[Startup] Missing DISCORD_TOKEN in environment. Check your .env file.');
-  process.exit(1);
-}
+import { startServer } from './server';
 
 const client = new Client({
   intents: [
@@ -30,10 +21,8 @@ const client = new Client({
 });
 
 client.commands = new Collection<string, Command>();
-
 for (const cmd of commands) {
   client.commands.set(cmd.data.name, cmd);
-  console.log(`[Commands] Loaded /${cmd.data.name}`);
 }
 
 readyEvent.register(client);
@@ -41,24 +30,28 @@ guildMemberAddEvent.register(client);
 interactionCreateEvent.register(client);
 
 async function main(): Promise<void> {
-  // Start HTTP server first so Render detects the port immediately
-  startWebhookServer(client);
+  const server = startServer(client);
 
-  try {
-    await deployCommands();
-  } catch (err) {
+  // Deploy commands in background — don't block gateway login
+  deployCommands().catch((err) => {
     console.error('[Startup] Failed to deploy commands (non-fatal):', err);
-  }
+  });
 
-  try {
-    await client.login(DISCORD_TOKEN);
-    console.log('[Startup] Discord client logged in');
-  } catch (err) {
-    console.error('[Startup] Failed to login to Discord:', err);
-    process.exit(1);
-  }
+  await client.login(config.discordToken);
+  console.log('[Startup] Bot connected to Discord gateway');
+
+  const shutdown = () => {
+    console.log('[Shutdown] Graceful shutdown...');
+    client.destroy();
+    server.close();
+    process.exit(0);
+  };
+
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
 }
 
 main().catch((err) => {
-  console.error('[Startup] Unexpected error:', err);
+  console.error('[Startup] Fatal error:', err);
+  process.exit(1);
 });
