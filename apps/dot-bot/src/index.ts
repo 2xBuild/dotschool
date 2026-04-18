@@ -43,6 +43,10 @@ process.on('SIGINT', shutdown);
 async function main(): Promise<void> {
   server = startServer(client);
 
+  client.on('error', (err) => console.error('[Client] Error:', err));
+  client.on('warn', (msg) => console.warn('[Client] Warning:', msg));
+
+  console.log('[Startup] Logging in to Discord...');
   await client.login(config.discordToken);
   console.log('[Startup] Bot connected to Discord gateway');
 }
