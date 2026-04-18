@@ -9,7 +9,7 @@ import {
 } from 'discord.js';
 import { addTag, removeTag } from './database/db';
 
-const WEBHOOK_PORT = Number(process.env.WEBHOOK_PORT) || 3100;
+const WEBHOOK_PORT = Number(process.env.WEBHOOK_PORT || process.env.PORT) || 3100;
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || '';
 const STAFF_CHANNEL_ROLE_NAMES = ['admin', 'mod', 'owner', 'volunteer'] as const;
 
@@ -332,6 +332,12 @@ function json(res: http.ServerResponse, status: number, data: unknown) {
 export function startWebhookServer(client: Client): void {
   const server = http.createServer(async (req, res) => {
     const url = req.url?.split('?')[0] ?? '';
+
+    // Health check for Render
+    if (req.method === 'GET' && (url === '/' || url === '/health')) {
+      json(res, 200, { status: 'ok' });
+      return;
+    }
 
     // /redirect is the OAuth2 landing page and does not require auth
     if (req.method === 'GET' && url === '/redirect') {
