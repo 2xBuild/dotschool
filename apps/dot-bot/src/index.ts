@@ -2,7 +2,6 @@ import { config } from './config';
 import { Client, Collection, GatewayIntentBits, Partials } from 'discord.js';
 import type { Command } from './types';
 import commands from './commands';
-import { deployCommands } from './deploy-commands';
 import * as readyEvent from './events/ready';
 import * as guildMemberAddEvent from './events/guildMemberAdd';
 import * as interactionCreateEvent from './events/interactionCreate';
@@ -43,11 +42,6 @@ process.on('SIGINT', shutdown);
 
 async function main(): Promise<void> {
   server = startServer(client);
-
-  // Deploy commands in background — don't block gateway login
-  deployCommands().catch((err) => {
-    console.error('[Startup] Failed to deploy commands (non-fatal):', err);
-  });
 
   await client.login(config.discordToken);
   console.log('[Startup] Bot connected to Discord gateway');
