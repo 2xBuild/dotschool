@@ -29,8 +29,20 @@ readyEvent.register(client);
 guildMemberAddEvent.register(client);
 interactionCreateEvent.register(client);
 
+let server: ReturnType<typeof startServer>;
+
+const shutdown = () => {
+  console.log('[Shutdown] Graceful shutdown...');
+  client.destroy();
+  server?.close();
+  process.exit(0);
+};
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);
+
 async function main(): Promise<void> {
-  const server = startServer(client);
+  server = startServer(client);
 
   // Deploy commands in background — don't block gateway login
   deployCommands().catch((err) => {
@@ -39,16 +51,6 @@ async function main(): Promise<void> {
 
   await client.login(config.discordToken);
   console.log('[Startup] Bot connected to Discord gateway');
-
-  const shutdown = () => {
-    console.log('[Shutdown] Graceful shutdown...');
-    client.destroy();
-    server.close();
-    process.exit(0);
-  };
-
-  process.on('SIGTERM', shutdown);
-  process.on('SIGINT', shutdown);
 }
 
 main().catch((err) => {
