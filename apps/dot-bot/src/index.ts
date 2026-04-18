@@ -41,15 +41,23 @@ guildMemberAddEvent.register(client);
 interactionCreateEvent.register(client);
 
 async function main(): Promise<void> {
+  // Start HTTP server first so Render detects the port immediately
+  startWebhookServer(client);
+
   try {
-    // Start HTTP server first so Render detects the port immediately
-    startWebhookServer(client);
     await deployCommands();
-    await client.login(DISCORD_TOKEN);
   } catch (err) {
-    console.error('[Startup] Failed to start bot:', err);
-    process.exit(1);
+    console.error('[Startup] Failed to deploy commands (non-fatal):', err);
+  }
+
+  try {
+    await client.login(DISCORD_TOKEN);
+    console.log('[Startup] Discord client logged in');
+  } catch (err) {
+    console.error('[Startup] Failed to login to Discord:', err);
   }
 }
 
-void main();
+main().catch((err) => {
+  console.error('[Startup] Unexpected error:', err);
+});
