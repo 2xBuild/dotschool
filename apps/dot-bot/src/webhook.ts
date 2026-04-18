@@ -383,7 +383,7 @@ export function startWebhookServer(client: Client): void {
     }
   });
 
-  server.listen(WEBHOOK_PORT, () => {
-    console.log(`[Webhook] HTTP server listening on port ${WEBHOOK_PORT}`);
+  server.listen(WEBHOOK_PORT, '0.0.0.0', () => {
+    console.log(`[Webhook] HTTP server listening on 0.0.0.0:${WEBHOOK_PORT}`);
   });
 }

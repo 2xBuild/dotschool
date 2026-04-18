@@ -42,9 +42,10 @@ interactionCreateEvent.register(client);
 
 async function main(): Promise<void> {
   try {
+    // Start HTTP server first so Render detects the port immediately
+    startWebhookServer(client);
     await deployCommands();
     await client.login(DISCORD_TOKEN);
-    startWebhookServer(client);
   } catch (err) {
     console.error('[Startup] Failed to start bot:', err);
     process.exit(1);
