@@ -55,6 +55,7 @@ async function main(): Promise<void> {
     console.log('[Startup] Discord client logged in');
   } catch (err) {
     console.error('[Startup] Failed to login to Discord:', err);
+    process.exit(1);
   }
 }
 
