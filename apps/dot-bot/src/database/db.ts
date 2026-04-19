@@ -16,10 +16,23 @@ if (!DATABASE_URL) {
   process.exit(1);
 }
 
-const client = postgres(DATABASE_URL);
+const isLocal =
+  DATABASE_URL.includes('localhost') || DATABASE_URL.includes('127.0.0.1');
+
+const client = postgres(DATABASE_URL, {
+  ssl: isLocal ? false : 'require',
+  connect_timeout: 10,
+  idle_timeout: 20,
+  max_lifetime: 60 * 30,
+});
+
 export const db = drizzle(client, {
   schema: { botMembers, botMemberTags, botConcerns, botConcernVotes, botAnnouncements },
 });
+
+export async function testConnection(): Promise<void> {
+  await db.execute(sql`SELECT 1`);
+}
 
 export async function registerUser(discordId: string, username: string) {
   const existing = await db.query.botMembers.findFirst({
@@ -101,7 +114,8 @@ export async function addTag(
       where: and(eq(botMemberTags.discordId, discordId), eq(botMemberTags.tag, tag)),
     });
     return !!exists;
-  } catch {
+  } catch (err) {
+    console.error('[DB] addTag failed:', err);
     return false;
   }
 }
@@ -192,8 +206,9 @@ export async function castVote(
 
   try {
     await db.insert(botConcernVotes).values({ concernId, voterId, voteType });
-  } catch {
-    return null; // duplicate vote
+  } catch (err) {
+    console.error('[DB] castVote insert failed:', err);
+    return null;
   }
 
   await db

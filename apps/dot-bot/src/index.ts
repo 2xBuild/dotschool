@@ -1,6 +1,7 @@
 import { config } from './config';
 import { startServer } from './server';
 import { initializeVerifiedAccess } from './lib/verified-access';
+import { testConnection } from './database/db';
 
 let server: ReturnType<typeof startServer>;
 
@@ -14,6 +15,15 @@ process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
 
 async function main(): Promise<void> {
+  // Validate database connection before starting
+  try {
+    await testConnection();
+    console.log('[Startup] Database connection OK');
+  } catch (err) {
+    console.error('[Startup] Database connection failed:', err);
+    process.exit(1);
+  }
+
   server = startServer();
 
   // Initialize verified role and channel permissions via REST API
