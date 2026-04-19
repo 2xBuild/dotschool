@@ -15,16 +15,21 @@ import {
 export const VERIFIED_ROLE_NAME = 'verified';
 const GENERAL_CHANNEL_NAME = 'general';
 
+/** Cached verified role — populated at startup or on first verify. */
+let cachedVerifiedRole: APIRole | null = null;
+
 export function normalizeDiscordUsername(value: string): string {
   return value.trim().replace(/^@+/, '').toLowerCase();
 }
 
 export async function ensureVerifiedRole(guildId: string): Promise<APIRole> {
-  return findOrCreateRole(
+  if (cachedVerifiedRole) return cachedVerifiedRole;
+  cachedVerifiedRole = await findOrCreateRole(
     guildId,
     VERIFIED_ROLE_NAME,
     'Required for verified dotschool members',
   );
+  return cachedVerifiedRole;
 }
 
 export async function lockGeneralToVerified(

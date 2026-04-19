@@ -26,18 +26,25 @@ async function main(): Promise<void> {
 
   server = startServer();
 
-  // Initialize verified role and channel permissions via REST API
-  try {
-    const { roleCreatedOrFound, generalLocked } =
-      await initializeVerifiedAccess(config.guildId);
-    console.log(
-      `[Startup] Verified role ready as "${roleCreatedOrFound.name}". #general restricted: ${generalLocked ? 'yes' : 'no'}.`,
-    );
-  } catch (err) {
-    console.error('[Startup] Failed to initialize verified access:', err);
-  }
-
   console.log('[Startup] Bot ready (HTTP interactions mode)');
+
+  // Initialize verified role and channel permissions via REST API (non-blocking).
+  // Uses a timeout so a stuck Discord API call won't block the REST queue.
+  const INIT_TIMEOUT_MS = 15_000;
+  Promise.race([
+    initializeVerifiedAccess(config.guildId),
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Timed out after 15s')), INIT_TIMEOUT_MS),
+    ),
+  ])
+    .then(({ roleCreatedOrFound, generalLocked }) => {
+      console.log(
+        `[Startup] Verified role ready as "${roleCreatedOrFound.name}". #general restricted: ${generalLocked ? 'yes' : 'no'}.`,
+      );
+    })
+    .catch((err) => {
+      console.error('[Startup] Failed to initialize verified access:', err);
+    });
 }
 
 main().catch((err) => {
