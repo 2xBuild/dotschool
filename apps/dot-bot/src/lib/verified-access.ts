@@ -11,11 +11,12 @@ import {
   permBits,
   type APIRole,
 } from '../discord';
+import { config } from '../config';
 
 export const VERIFIED_ROLE_NAME = 'verified';
 const GENERAL_CHANNEL_NAME = 'general';
 
-/** Cached verified role — populated at startup or on first verify. */
+/** Cached verified role — populated from env or fetched on first use. */
 let cachedVerifiedRole: APIRole | null = null;
 
 export function normalizeDiscordUsername(value: string): string {
@@ -24,6 +25,18 @@ export function normalizeDiscordUsername(value: string): string {
 
 export async function ensureVerifiedRole(guildId: string): Promise<APIRole> {
   if (cachedVerifiedRole) return cachedVerifiedRole;
+
+  // Use pre-configured role ID if available (avoids fetching all guild roles)
+  if (config.verifiedRoleId) {
+    cachedVerifiedRole = {
+      id: config.verifiedRoleId,
+      name: VERIFIED_ROLE_NAME,
+      position: 0,
+      permissions: '0',
+    };
+    return cachedVerifiedRole;
+  }
+
   cachedVerifiedRole = await findOrCreateRole(
     guildId,
     VERIFIED_ROLE_NAME,
