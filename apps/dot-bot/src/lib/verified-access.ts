@@ -83,21 +83,26 @@ export async function verifyMember(
     return { ok: false, reason: 'Discord username is empty.' };
   }
 
+  console.log(`[verify] Looking up profile for "${normalizedUsername}"`);
   const matchedUser =
     await findDotschoolUserByDiscordUsername(normalizedUsername);
   if (!matchedUser) {
+    console.log(`[verify] No profile matched "${normalizedUsername}"`);
     return {
       ok: false,
       reason: 'No dotschool profile matched this Discord username.',
     };
   }
 
+  console.log(`[verify] Matched profile: ${matchedUser.profileUsername}`);
   await upsertVerifiedUser(userId, normalizedUsername, matchedUser.userId);
 
+  console.log('[verify] Ensuring verified role exists');
   const verifiedRole = await ensureVerifiedRole(guildId);
   const alreadyVerified = memberRoleIds.includes(verifiedRole.id);
 
   if (!alreadyVerified) {
+    console.log('[verify] Adding verified role to user');
     await addRole(
       guildId,
       userId,
@@ -106,6 +111,7 @@ export async function verifyMember(
     );
   }
 
+  console.log('[verify] Verification complete');
   return {
     ok: true,
     matchedProfileUsername: matchedUser.profileUsername,

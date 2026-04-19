@@ -18,42 +18,49 @@ export const command: Command = {
       return;
     }
 
-    const result = await verifyMember(
-      ctx.guildId,
-      ctx.user.id,
-      ctx.user.username,
-      ctx.memberRoles,
-    );
+    try {
+      const result = await verifyMember(
+        ctx.guildId,
+        ctx.user.id,
+        ctx.user.username,
+        ctx.memberRoles,
+      );
 
-    if (!result.ok) {
+      if (!result.ok) {
+        await ctx.editReply({
+          content: `${result.reason} Add the same Discord username to your dotschool profile first, then run \`/verify\` again.`,
+        });
+        return;
+      }
+
+      const embed = new EmbedBuilder()
+        .setTitle('Verification Successful')
+        .setDescription(
+          `Welcome, <@${ctx.user.id}>! You now have access as a verified dotschool member.`,
+        )
+        .setColor(0x57f287)
+        .setThumbnail(avatarUrl(ctx.user))
+        .addFields(
+          {
+            name: 'Discord username',
+            value: ctx.user.username,
+            inline: true,
+          },
+          {
+            name: 'Matched profile',
+            value: result.matchedProfileUsername,
+            inline: true,
+          },
+        )
+        .setTimestamp();
+
+      await ctx.editReply({ embeds: [embed] });
+    } catch (err) {
+      console.error('[verify] Error:', err);
       await ctx.editReply({
-        content: `${result.reason} Add the same Discord username to your dotschool profile first, then run \`/verify\` again.`,
+        content: 'Something went wrong during verification. Please try again later.',
       });
-      return;
     }
-
-    const embed = new EmbedBuilder()
-      .setTitle('Verification Successful')
-      .setDescription(
-        `Welcome, <@${ctx.user.id}>! You now have access as a verified dotschool member.`,
-      )
-      .setColor(0x57f287)
-      .setThumbnail(avatarUrl(ctx.user))
-      .addFields(
-        {
-          name: 'Discord username',
-          value: ctx.user.username,
-          inline: true,
-        },
-        {
-          name: 'Matched profile',
-          value: result.matchedProfileUsername,
-          inline: true,
-        },
-      )
-      .setTimestamp();
-
-    await ctx.editReply({ embeds: [embed] });
   },
 };
 
