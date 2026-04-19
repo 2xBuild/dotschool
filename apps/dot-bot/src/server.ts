@@ -1,18 +1,15 @@
 import http from 'http';
-import type { Client } from 'discord.js';
 import { config } from './config';
 import { handleStartBatch } from './handlers/start-batch';
 import { handleSyncRole } from './handlers/sync-role';
+import { verifyKey, handleInteraction } from './interactions';
 
-export function startServer(client: Client): http.Server {
+export function startServer(): http.Server {
   const server = http.createServer(async (req, res) => {
     const url = req.url?.split('?')[0] ?? '';
 
     if (req.method === 'GET' && (url === '/' || url === '/health')) {
-      json(res, 200, {
-        status: 'ok',
-        gateway: client.isReady() ? 'connected' : 'disconnected',
-      });
+      json(res, 200, { status: 'ok' });
       return;
     }
 
@@ -21,6 +18,34 @@ export function startServer(client: Client): http.Server {
       return;
     }
 
+    // Discord interactions endpoint
+    if (req.method === 'POST' && url === '/interactions') {
+      if (!config.publicKey) {
+        json(res, 500, { error: 'APPLICATION_PUBLIC_KEY not configured' });
+        return;
+      }
+
+      const signature = req.headers['x-signature-ed25519'] as string;
+      const timestamp = req.headers['x-signature-timestamp'] as string;
+      const rawBody = await readBody(req);
+
+      if (!signature || !timestamp || !verifyKey(rawBody, signature, timestamp)) {
+        json(res, 401, { error: 'Invalid signature' });
+        return;
+      }
+
+      try {
+        await handleInteraction(rawBody, res);
+      } catch (err) {
+        console.error('[Server] Interaction error:', err);
+        if (!res.headersSent) {
+          json(res, 500, { error: 'Internal error' });
+        }
+      }
+      return;
+    }
+
+    // Webhook auth for remaining POST routes
     if (config.webhookSecret) {
       if (req.headers.authorization !== `Bearer ${config.webhookSecret}`) {
         json(res, 401, { error: 'Unauthorized' });
@@ -44,9 +69,9 @@ export function startServer(client: Client): http.Server {
     try {
       let result;
       if (url === '/start-batch') {
-        result = await handleStartBatch(client, body);
+        result = await handleStartBatch(body);
       } else if (url === '/sync-role') {
-        result = await handleSyncRole(client, body);
+        result = await handleSyncRole(body);
       } else {
         json(res, 404, { error: 'Not found' });
         return;
@@ -90,7 +115,9 @@ function escapeHtml(str: string): string {
 function handleRedirect(req: http.IncomingMessage, res: http.ServerResponse) {
   const reqUrl = new URL(req.url ?? '/', `http://${req.headers.host}`);
   const guildId = reqUrl.searchParams.get('guild_id') ?? '';
-  const guildName = escapeHtml(reqUrl.searchParams.get('guild_name') ?? 'your server');
+  const guildName = escapeHtml(
+    reqUrl.searchParams.get('guild_name') ?? 'your server',
+  );
 
   const html = `<!DOCTYPE html>
 <html lang="en">

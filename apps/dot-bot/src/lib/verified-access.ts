@@ -1,11 +1,16 @@
+import { ChannelType, PermissionFlagsBits } from 'discord.js';
 import {
-  ChannelType,
-  Guild,
-  GuildMember,
-  Role,
-} from 'discord.js';
-import { findDotschoolUserByDiscordUsername, upsertVerifiedUser } from '../database/db';
+  findDotschoolUserByDiscordUsername,
+  upsertVerifiedUser,
+} from '../database/db';
 import { findOrCreateRole } from './roles';
+import {
+  fetchChannels,
+  editChannelPermissions,
+  addRole,
+  permBits,
+  type APIRole,
+} from '../discord';
 
 export const VERIFIED_ROLE_NAME = 'verified';
 const GENERAL_CHANNEL_NAME = 'general';
@@ -14,67 +19,72 @@ export function normalizeDiscordUsername(value: string): string {
   return value.trim().replace(/^@+/, '').toLowerCase();
 }
 
-export async function ensureVerifiedRole(guild: Guild): Promise<Role> {
-  return findOrCreateRole(guild, VERIFIED_ROLE_NAME, 'Required for verified dotschool members');
+export async function ensureVerifiedRole(guildId: string): Promise<APIRole> {
+  return findOrCreateRole(
+    guildId,
+    VERIFIED_ROLE_NAME,
+    'Required for verified dotschool members',
+  );
 }
 
-export async function lockGeneralToVerified(guild: Guild, verifiedRole: Role): Promise<boolean> {
-  await guild.channels.fetch();
+export async function lockGeneralToVerified(
+  guildId: string,
+  verifiedRoleId: string,
+): Promise<boolean> {
+  const channels = await fetchChannels(guildId);
+  const general = channels.find(
+    (ch) =>
+      ch.type === ChannelType.GuildText &&
+      ch.name?.toLowerCase() === GENERAL_CHANNEL_NAME,
+  );
+  if (!general) return false;
 
-  const generalChannel = guild.channels.cache.find(
-    (channel) =>
-      channel?.type === ChannelType.GuildText &&
-      channel.name.toLowerCase() === GENERAL_CHANNEL_NAME,
+  const denyBits = permBits(
+    PermissionFlagsBits.SendMessages,
+    PermissionFlagsBits.CreatePublicThreads,
+    PermissionFlagsBits.SendMessagesInThreads,
   );
 
-  if (!generalChannel || generalChannel.type !== ChannelType.GuildText) {
-    return false;
-  }
-
-  await generalChannel.permissionOverwrites.edit(
-    guild.roles.everyone,
-    {
-      SendMessages: false,
-      CreatePublicThreads: false,
-      SendMessagesInThreads: false,
-    },
-    { reason: 'Only verified members can talk in #general' },
+  const allowBits = permBits(
+    PermissionFlagsBits.SendMessages,
+    PermissionFlagsBits.CreatePublicThreads,
+    PermissionFlagsBits.SendMessagesInThreads,
   );
 
-  await generalChannel.permissionOverwrites.edit(
-    verifiedRole,
-    {
-      SendMessages: true,
-      CreatePublicThreads: true,
-      SendMessagesInThreads: true,
-    },
-    { reason: 'Allow verified members to talk in #general' },
+  // @everyone role ID equals the guild ID
+  await editChannelPermissions(
+    general.id,
+    guildId,
+    { deny: denyBits, type: 0 },
+    'Only verified members can talk in #general',
+  );
+
+  await editChannelPermissions(
+    general.id,
+    verifiedRoleId,
+    { allow: allowBits, type: 0 },
+    'Allow verified members to talk in #general',
   );
 
   return true;
 }
 
-export async function verifyMember(member: GuildMember): Promise<
-  | {
-      ok: true;
-      matchedProfileUsername: string;
-      roleAdded: boolean;
-    }
-  | {
-      ok: false;
-      reason: string;
-    }
+export async function verifyMember(
+  guildId: string,
+  userId: string,
+  username: string,
+  memberRoleIds: string[],
+): Promise<
+  | { ok: true; matchedProfileUsername: string; roleAdded: boolean }
+  | { ok: false; reason: string }
 > {
-  if (member.user.bot) {
-    return { ok: false, reason: 'Bots are not eligible for verification.' };
-  }
-
-  const normalizedUsername = normalizeDiscordUsername(member.user.username);
+  const normalizedUsername = normalizeDiscordUsername(username);
   if (!normalizedUsername) {
     return { ok: false, reason: 'Discord username is empty.' };
   }
 
-  const matchedUser = await findDotschoolUserByDiscordUsername(normalizedUsername);
+  const matchedUser =
+    await findDotschoolUserByDiscordUsername(normalizedUsername);
   if (!matchedUser) {
     return {
       ok: false,
@@ -82,14 +92,16 @@ export async function verifyMember(member: GuildMember): Promise<
     };
   }
 
-  await upsertVerifiedUser(member.user.id, normalizedUsername, matchedUser.userId);
+  await upsertVerifiedUser(userId, normalizedUsername, matchedUser.userId);
 
-  const verifiedRole = await ensureVerifiedRole(member.guild);
-  const alreadyVerified = member.roles.cache.has(verifiedRole.id);
+  const verifiedRole = await ensureVerifiedRole(guildId);
+  const alreadyVerified = memberRoleIds.includes(verifiedRole.id);
 
   if (!alreadyVerified) {
-    await member.roles.add(
-      verifiedRole,
+    await addRole(
+      guildId,
+      userId,
+      verifiedRole.id,
       `Verified against dotschool profile "${matchedUser.profileUsername}"`,
     );
   }
@@ -101,12 +113,14 @@ export async function verifyMember(member: GuildMember): Promise<
   };
 }
 
-export async function initializeVerifiedAccess(guild: Guild): Promise<{
-  roleCreatedOrFound: Role;
+export async function initializeVerifiedAccess(guildId: string): Promise<{
+  roleCreatedOrFound: APIRole;
   generalLocked: boolean;
 }> {
-  const roleCreatedOrFound = await ensureVerifiedRole(guild);
-  const generalLocked = await lockGeneralToVerified(guild, roleCreatedOrFound);
-
+  const roleCreatedOrFound = await ensureVerifiedRole(guildId);
+  const generalLocked = await lockGeneralToVerified(
+    guildId,
+    roleCreatedOrFound.id,
+  );
   return { roleCreatedOrFound, generalLocked };
 }

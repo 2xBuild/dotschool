@@ -1,18 +1,21 @@
-import type { Guild, Role } from 'discord.js';
+import { fetchRoles, createRole, type APIRole } from '../discord';
 
-export async function findRole(guild: Guild, name: string): Promise<Role | null> {
-  await guild.roles.fetch();
+export async function findRole(
+  guildId: string,
+  name: string,
+): Promise<APIRole | null> {
+  const roles = await fetchRoles(guildId);
   return (
-    guild.roles.cache.find((r) => r.name.toLowerCase() === name.toLowerCase()) ?? null
+    roles.find((r) => r.name.toLowerCase() === name.toLowerCase()) ?? null
   );
 }
 
 export async function findOrCreateRole(
-  guild: Guild,
+  guildId: string,
   name: string,
   reason?: string,
-): Promise<Role> {
-  const existing = await findRole(guild, name);
+): Promise<APIRole> {
+  const existing = await findRole(guildId, name);
   if (existing) return existing;
-  return guild.roles.create({ name, reason: reason ?? `Auto-created role "${name}"` });
+  return createRole(guildId, name, reason);
 }

@@ -1,11 +1,6 @@
-import {
-  ChannelType,
-  PermissionFlagsBits,
-  type Client,
-  type Guild,
-  type Role,
-} from 'discord.js';
+import { ChannelType, PermissionFlagsBits } from 'discord.js';
 import { config } from '../config';
+import { createChannel, addRoles, permBits } from '../discord';
 import { findRole, findOrCreateRole } from '../lib/roles';
 import { addTag } from '../database/db';
 
@@ -18,117 +13,160 @@ export interface StartBatchBody {
   members: { discordId: string }[];
 }
 
-export async function handleStartBatch(client: Client, body: StartBatchBody) {
-  const guild = client.guilds.cache.get(config.guildId);
-  if (!guild) return { error: 'Guild not found' };
+export async function handleStartBatch(body: StartBatchBody) {
+  const guildId = config.guildId;
+  const everyoneRoleId = guildId; // @everyone role ID === guild ID
 
   const { batchLabel, tag, batchNumber, members } = body;
   if (!batchLabel || !tag) return { error: 'Missing batchLabel or tag' };
 
-  const categoryName = `Batch ${batchNumber} — ${batchLabel}`.trim().slice(0, 100) || 'Batch';
+  const categoryName =
+    `Batch ${batchNumber} — ${batchLabel}`.trim().slice(0, 100) || 'Batch';
 
-  const batchMemberRole = await findOrCreateRole(guild, `Batch ${batchNumber}`);
-  const batchVolunteerRole = await findOrCreateRole(guild, `Batch ${batchNumber} Volunteer`);
+  const batchMemberRole = await findOrCreateRole(
+    guildId,
+    `Batch ${batchNumber}`,
+  );
+  const batchVolunteerRole = await findOrCreateRole(
+    guildId,
+    `Batch ${batchNumber} Volunteer`,
+  );
 
   const staffRoles = (
-    await Promise.all(STAFF_ROLE_NAMES.map((name) => findRole(guild, name)))
-  ).filter((r): r is Role => r !== null);
+    await Promise.all(
+      STAFF_ROLE_NAMES.map((name) => findRole(guildId, name)),
+    )
+  ).filter((r): r is NonNullable<typeof r> => r !== null);
 
-  const allAccessRoles = deduplicateRoles([batchMemberRole, batchVolunteerRole, ...staffRoles]);
-  const volunteerAccessRoles = deduplicateRoles([batchVolunteerRole, ...staffRoles]);
+  const allAccessRoleIds = deduplicateIds([
+    batchMemberRole.id,
+    batchVolunteerRole.id,
+    ...staffRoles.map((r) => r.id),
+  ]);
+  const volunteerAccessRoleIds = deduplicateIds([
+    batchVolunteerRole.id,
+    ...staffRoles.map((r) => r.id),
+  ]);
 
-  const category = await guild.channels.create({
-    name: categoryName,
-    type: ChannelType.GuildCategory,
-    permissionOverwrites: privateOverwrites(guild, allAccessRoles),
-    reason: `Batch started: ${categoryName}`,
-  });
+  const category = await createChannel(
+    guildId,
+    {
+      name: categoryName,
+      type: ChannelType.GuildCategory,
+      permission_overwrites: privateOverwrites(
+        everyoneRoleId,
+        allAccessRoleIds,
+      ),
+    },
+    `Batch started: ${categoryName}`,
+  );
 
-  const defaultOverwrites = privateOverwrites(guild, allAccessRoles);
+  const defaultOverwrites = privateOverwrites(everyoneRoleId, allAccessRoleIds);
 
   const channelDefs: {
     name: string;
     type: ChannelType.GuildText | ChannelType.GuildVoice;
     overwrites?: ReturnType<typeof privateOverwrites>;
   }[] = [
-    { name: 'volunteers', type: ChannelType.GuildText, overwrites: privateOverwrites(guild, volunteerAccessRoles) },
+    {
+      name: 'volunteers',
+      type: ChannelType.GuildText,
+      overwrites: privateOverwrites(everyoneRoleId, volunteerAccessRoleIds),
+    },
     { name: 'announcement', type: ChannelType.GuildText },
     { name: 'main', type: ChannelType.GuildText },
     { name: 'voice', type: ChannelType.GuildVoice },
     { name: 'voice-2', type: ChannelType.GuildVoice },
     { name: 'off-topic', type: ChannelType.GuildText },
     { name: 'concerns', type: ChannelType.GuildText },
-    { name: 'qna', type: ChannelType.GuildText, overwrites: qnaOverwrites(guild, allAccessRoles) },
+    {
+      name: 'qna',
+      type: ChannelType.GuildText,
+      overwrites: qnaOverwrites(everyoneRoleId, allAccessRoleIds),
+    },
   ];
 
   const createdChannels: string[] = [];
   for (const ch of channelDefs) {
-    const created = await guild.channels.create({
-      name: ch.name,
-      type: ch.type,
-      parent: category.id,
-      permissionOverwrites: ch.overwrites ?? defaultOverwrites,
-      reason: `Batch channel for ${categoryName}`,
-    });
-    createdChannels.push(created.name);
+    const created = await createChannel(
+      guildId,
+      {
+        name: ch.name,
+        type: ch.type,
+        parent_id: category.id,
+        permission_overwrites: ch.overwrites ?? defaultOverwrites,
+      },
+      `Batch channel for ${categoryName}`,
+    );
+    createdChannels.push(created.name ?? ch.name);
   }
 
-  const legacyRole = await findOrCreateRole(guild, tag);
+  const legacyRole = await findOrCreateRole(guildId, tag);
   const roleResults: { discordId: string; ok: boolean; reason?: string }[] = [];
 
   for (const m of members) {
     await addTag(m.discordId, tag, 'system');
     try {
-      const member = await guild.members.fetch(m.discordId);
-      await member.roles.add(
-        [legacyRole, batchMemberRole],
+      await addRoles(
+        guildId,
+        m.discordId,
+        [legacyRole.id, batchMemberRole.id],
         `Batch start: auto-assigned "${tag}" + "Batch ${batchNumber}"`,
       );
       roleResults.push({ discordId: m.discordId, ok: true });
     } catch (err) {
-      roleResults.push({ discordId: m.discordId, ok: false, reason: String(err) });
+      roleResults.push({
+        discordId: m.discordId,
+        ok: false,
+        reason: String(err),
+      });
     }
   }
 
   return {
     ok: true,
-    category: category.name,
+    category: category.name ?? categoryName,
     channels: createdChannels,
     roleAssignments: roleResults,
   };
 }
 
-function deduplicateRoles(roles: (Role | null)[]): Role[] {
-  const seen = new Set<string>();
-  return roles.filter((role): role is Role => {
-    if (!role || seen.has(role.id)) return false;
-    seen.add(role.id);
-    return true;
-  });
+function deduplicateIds(ids: string[]): string[] {
+  return [...new Set(ids)];
 }
 
-function privateOverwrites(guild: Guild, roles: Role[]) {
+function privateOverwrites(everyoneRoleId: string, roleIds: string[]) {
   return [
-    { id: guild.roles.everyone.id, deny: [PermissionFlagsBits.ViewChannel] },
-    ...roles.map((role) => ({
-      id: role.id,
-      allow: [PermissionFlagsBits.ViewChannel],
+    {
+      id: everyoneRoleId,
+      type: 0,
+      deny: String(PermissionFlagsBits.ViewChannel),
+    },
+    ...roleIds.map((id) => ({
+      id,
+      type: 0,
+      allow: String(PermissionFlagsBits.ViewChannel),
     })),
   ];
 }
 
-function qnaOverwrites(guild: Guild, roles: Role[]) {
+function qnaOverwrites(everyoneRoleId: string, roleIds: string[]) {
   return [
-    { id: guild.roles.everyone.id, deny: [PermissionFlagsBits.ViewChannel] },
-    ...roles.map((role) => ({
-      id: role.id,
-      allow: [
+    {
+      id: everyoneRoleId,
+      type: 0,
+      deny: String(PermissionFlagsBits.ViewChannel),
+    },
+    ...roleIds.map((id) => ({
+      id,
+      type: 0,
+      allow: permBits(
         PermissionFlagsBits.ViewChannel,
         PermissionFlagsBits.CreatePublicThreads,
         PermissionFlagsBits.SendMessagesInThreads,
         PermissionFlagsBits.ReadMessageHistory,
-      ],
-      deny: [PermissionFlagsBits.SendMessages],
+      ),
+      deny: String(PermissionFlagsBits.SendMessages),
     })),
   ];
 }

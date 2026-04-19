@@ -1,21 +1,18 @@
-import {
-  SlashCommandBuilder,
-  ChatInputCommandInteraction,
-  EmbedBuilder,
-  MessageFlags,
-} from 'discord.js';
-import { Command } from '../types';
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import type { Command, InteractionContext } from '../types';
 
 export const command: Command = {
   data: new SlashCommandBuilder()
     .setName('rules')
     .setDescription('Read the server rules and expected behavior'),
 
-  async execute(interaction: ChatInputCommandInteraction): Promise<void> {
+  async execute(ctx: InteractionContext): Promise<void> {
     const embed = new EmbedBuilder()
       .setTitle('Server Rules')
       .setColor(0xed4245)
-      .setDescription('Please follow these guidelines to keep the server safe, respectful, and useful for everyone.')
+      .setDescription(
+        'Please follow these guidelines to keep the server safe, respectful, and useful for everyone.',
+      )
       .addFields(
         {
           name: 'What to do',
@@ -39,14 +36,12 @@ export const command: Command = {
         },
         {
           name: 'If you are unsure',
-          value: 'Ask a moderator before acting. When in doubt, choose the respectful and safer option.',
+          value:
+            'Ask a moderator before acting. When in doubt, choose the respectful and safer option.',
         },
-      )
+      );
 
-    await interaction.reply({
-      embeds: [embed],
-      flags: MessageFlags.Ephemeral,
-    });
+    await ctx.reply({ embeds: [embed], flags: 64 });
   },
 };
 

@@ -1,12 +1,11 @@
-import {
-  SlashCommandBuilder,
-  ChatInputCommandInteraction,
-  TextChannel,
-  MessageFlags,
-} from 'discord.js';
+import { SlashCommandBuilder, ChannelType } from 'discord.js';
 import { createConcern, getUser, setConcernDiscordPost } from '../database/db';
-import { buildConcernComponents, buildConcernEmbed } from '../lib/concern-message';
-import { Command } from '../types';
+import {
+  buildConcernComponents,
+  buildConcernEmbed,
+} from '../lib/concern-message';
+import { sendMessage, fetchChannels } from '../discord';
+import type { Command, InteractionContext } from '../types';
 
 export const command: Command = {
   data: new SlashCommandBuilder()
@@ -27,7 +26,9 @@ export const command: Command = {
     .addStringOption((option) =>
       option
         .setName('action')
-        .setDescription('Action to take if the community supports this concern')
+        .setDescription(
+          'Action to take if the community supports this concern',
+        )
         .setRequired(true)
         .addChoices(
           { name: 'Mute', value: 'mute' },
@@ -41,26 +42,29 @@ export const command: Command = {
         .setRequired(false),
     ),
 
-  async execute(interaction: ChatInputCommandInteraction): Promise<void> {
-    const targetUser = interaction.options.getUser('user', true);
-    const reason = interaction.options.getString('reason', true);
-    const requestedAction = interaction.options.getString('action', true) as 'mute' | 'block';
-    const anonymous = interaction.options.getBoolean('anonymous') ?? false;
+  async execute(ctx: InteractionContext): Promise<void> {
+    const targetUser = ctx.options.getUser('user', true)!;
+    const reason = ctx.options.getString('reason', true)!;
+    const requestedAction = ctx.options.getString('action', true)! as
+      | 'mute'
+      | 'block';
+    const anonymous = ctx.options.getBoolean('anonymous') ?? false;
 
-    if (targetUser.id === interaction.user.id) {
-      await interaction.reply({
+    if (targetUser.id === ctx.user.id) {
+      await ctx.reply({
         content: 'You cannot raise a concern about yourself.',
-        flags: MessageFlags.Ephemeral,
+        flags: 64,
       });
       return;
     }
 
-    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+    await ctx.deferReply({ ephemeral: true });
 
-    const reporter = await getUser(interaction.user.id);
+    const reporter = await getUser(ctx.user.id);
     if (!reporter) {
-      await interaction.editReply({
-        content: 'You must be registered to raise a concern. Use `/verify` first.',
+      await ctx.editReply({
+        content:
+          'You must be registered to raise a concern. Use `/verify` first.',
       });
       return;
     }
@@ -68,7 +72,7 @@ export const command: Command = {
     let concern;
     try {
       concern = await createConcern(
-        interaction.user.id,
+        ctx.user.id,
         targetUser.id,
         reason,
         anonymous,
@@ -76,35 +80,35 @@ export const command: Command = {
       );
     } catch (err) {
       console.error('[concern] Failed to create concern:', err);
-      await interaction.editReply({ content: 'Failed — could not create the concern.' });
+      await ctx.editReply({
+        content: 'Failed — could not create the concern.',
+      });
       return;
     }
 
-    let postChannel: TextChannel | null = null;
-
-    if (interaction.guild) {
-      const found = interaction.guild.channels.cache.find(
-        (ch): ch is TextChannel =>
-          ch instanceof TextChannel && ch.name === 'concerns',
+    // Find the #concerns channel, fall back to current channel
+    let channelId = ctx.channelId;
+    if (ctx.guildId) {
+      const channels = await fetchChannels(ctx.guildId);
+      const found = channels.find(
+        (ch) =>
+          ch.type === ChannelType.GuildText && ch.name === 'concerns',
       );
-      postChannel = found ?? null;
-    }
-
-    if (!postChannel) {
-      postChannel = interaction.channel as TextChannel;
+      if (found) channelId = found.id;
     }
 
     try {
-      const message = await postChannel.send({
-        embeds: [buildConcernEmbed(concern)],
-        components: buildConcernComponents(concern),
+      const msg = await sendMessage(channelId, {
+        embeds: [buildConcernEmbed(concern).toJSON()],
+        components: buildConcernComponents(concern).map((c) => c.toJSON()),
       });
-      await setConcernDiscordPost(concern.id, message.channelId, message.id);
-      await interaction.editReply({ content: 'Concern created successfully!' });
+      await setConcernDiscordPost(concern.id, msg.channel_id, msg.id);
+      await ctx.editReply({ content: 'Concern created successfully!' });
     } catch (err) {
       console.error('[concern] Failed to post concern embed:', err);
-      await interaction.editReply({
-        content: 'Failed — concern saved but could not post the embed. Check my channel permissions.',
+      await ctx.editReply({
+        content:
+          'Failed — concern saved but could not post the embed. Check my channel permissions.',
       });
     }
   },

@@ -12,6 +12,7 @@ export const config = {
   discordToken: required('DISCORD_TOKEN'),
   clientId: required('CLIENT_ID'),
   guildId: required('GUILD_ID'),
+  publicKey: process.env.APPLICATION_PUBLIC_KEY ?? '',
   webhookPort: Number(process.env.WEBHOOK_PORT || process.env.PORT) || 3100,
   webhookSecret: process.env.WEBHOOK_SECRET ?? '',
 } as const;

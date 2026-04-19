@@ -1,41 +1,11 @@
-console.log('[Boot] Process starting...');
 import { config } from './config';
-import { Client, Collection, GatewayIntentBits, Partials } from 'discord.js';
-import type { Command } from './types';
-import commands from './commands';
-import * as readyEvent from './events/ready';
-import * as guildMemberAddEvent from './events/guildMemberAdd';
-import * as interactionCreateEvent from './events/interactionCreate';
 import { startServer } from './server';
-
-console.log('[Boot] All modules loaded');
-
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildModeration,
-    GatewayIntentBits.DirectMessages,
-    GatewayIntentBits.MessageContent,
-  ],
-  partials: [Partials.Channel],
-});
-
-client.commands = new Collection<string, Command>();
-for (const cmd of commands) {
-  client.commands.set(cmd.data.name, cmd);
-}
-
-readyEvent.register(client);
-guildMemberAddEvent.register(client);
-interactionCreateEvent.register(client);
+import { initializeVerifiedAccess } from './lib/verified-access';
 
 let server: ReturnType<typeof startServer>;
 
 const shutdown = () => {
   console.log('[Shutdown] Graceful shutdown...');
-  client.destroy();
   server?.close();
   process.exit(0);
 };
@@ -44,20 +14,20 @@ process.on('SIGTERM', shutdown);
 process.on('SIGINT', shutdown);
 
 async function main(): Promise<void> {
-  server = startServer(client);
+  server = startServer();
 
-  client.on('error', (err) => console.error('[Client] Error:', err));
-  client.on('warn', (msg) => console.warn('[Client] Warning:', msg));
-  client.rest.on('rateLimited', (info) => console.warn('[Client] Rate limited:', info));
-  client.on('debug', (msg) => {
-    if (msg.includes('Heartbeat') || msg.includes('Session')) {
-      console.log('[Debug]', msg);
-    }
-  });
+  // Initialize verified role and channel permissions via REST API
+  try {
+    const { roleCreatedOrFound, generalLocked } =
+      await initializeVerifiedAccess(config.guildId);
+    console.log(
+      `[Startup] Verified role ready as "${roleCreatedOrFound.name}". #general restricted: ${generalLocked ? 'yes' : 'no'}.`,
+    );
+  } catch (err) {
+    console.error('[Startup] Failed to initialize verified access:', err);
+  }
 
-  console.log('[Startup] Logging in to Discord...');
-  await client.login(config.discordToken);
-  console.log('[Startup] Bot connected to Discord gateway');
+  console.log('[Startup] Bot ready (HTTP interactions mode)');
 }
 
 main().catch((err) => {
