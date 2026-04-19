@@ -17,14 +17,15 @@ export interface APIRole {
   permissions: string;
 }
 
-export async function fetchRoles(guildId: string): Promise<APIRole[]> {
-  return rest.get(Routes.guildRoles(guildId)) as Promise<APIRole[]>;
+export async function fetchRoles(guildId: string, signal?: AbortSignal): Promise<APIRole[]> {
+  return rest.get(Routes.guildRoles(guildId), { signal }) as Promise<APIRole[]>;
 }
 
-export async function createRole(guildId: string, name: string, reason?: string): Promise<APIRole> {
+export async function createRole(guildId: string, name: string, reason?: string, signal?: AbortSignal): Promise<APIRole> {
   return rest.post(Routes.guildRoles(guildId), {
     body: { name },
     reason: reason ?? `Auto-created role "${name}"`,
+    signal,
   }) as Promise<APIRole>;
 }
 
