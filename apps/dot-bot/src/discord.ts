@@ -18,7 +18,19 @@ export interface APIRole {
 }
 
 export async function fetchRoles(guildId: string, signal?: AbortSignal): Promise<APIRole[]> {
-  return rest.get(Routes.guildRoles(guildId), { signal }) as Promise<APIRole[]>;
+  const url = `https://discord.com/api/v10/guilds/${guildId}/roles`;
+  console.log(`[fetchRoles] GET ${url}`);
+  const res = await fetch(url, {
+    headers: { Authorization: `Bot ${config.discordToken}` },
+    signal,
+  });
+  console.log(`[fetchRoles] Response: ${res.status} ${res.statusText}`);
+  if (!res.ok) {
+    const body = await res.text();
+    console.error(`[fetchRoles] Error body: ${body}`);
+    throw new Error(`Discord API error ${res.status}: ${body}`);
+  }
+  return res.json() as Promise<APIRole[]>;
 }
 
 export async function createRole(guildId: string, name: string, reason?: string, signal?: AbortSignal): Promise<APIRole> {
