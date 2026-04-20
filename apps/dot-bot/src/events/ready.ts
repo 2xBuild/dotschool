@@ -2,7 +2,7 @@ import { Client, ActivityType } from 'discord.js';
 import { initializeVerifiedAccess } from '../lib/verified-access';
 
 export function register(client: Client): void {
-  client.once('ready', async (readyClient) => {
+  client.once('clientReady', async (readyClient) => {
     console.log(`[Ready] Logged in as ${readyClient.user.tag}`);
 
     readyClient.user.setPresence({
