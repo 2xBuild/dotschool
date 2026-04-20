@@ -7,18 +7,22 @@ import { cn } from "@/lib/utils";
 type BatchCardIconAvatarGroupProps = {
   iconKeys: string[];
   s: Pick<BatchListCardStyleSet, "avatarGroupChip" | "icon">;
+  className?: string;
+  small?: boolean;
 };
 
 export function BatchCardIconAvatarGroup({
   iconKeys,
   s,
+  className,
+  small,
 }: BatchCardIconAvatarGroupProps) {
   const resolved = resolveBatchCardIcons(iconKeys);
   if (resolved.length === 0) return null;
 
   return (
     <ul
-      className="flex list-none justify-end pl-2"
+      className={cn("flex list-none justify-end pl-2", small && "pl-0", className)}
       aria-label="Technologies for this batch"
     >
       {resolved.map((item, i) => {
@@ -27,21 +31,30 @@ export function BatchCardIconAvatarGroup({
           <li
             key={`${item.key}-${i}`}
             className={cn(
-              "relative flex size-7 shrink-0 items-center justify-center rounded-full border-2 sm:size-7",
+              small
+                ? "relative flex size-5 shrink-0 items-center justify-center rounded-full border"
+                : "relative flex size-7 shrink-0 items-center justify-center rounded-full border-2 sm:size-7",
               s.avatarGroupChip,
-              i > 0 && "-ml-2 sm:-ml-2",
+              small && i > 0 && "-ml-1.5",
+              !small && i > 0 && "-ml-2 sm:-ml-2",
             )}
             style={{ zIndex: i }}
           >
             {item.kind === "lucide" ? (
               <Icon
                 strokeWidth={1.65}
-                className={cn("size-[0.8rem] sm:size-[0.85rem]", s.icon)}
+                className={cn(
+                  small ? "size-[0.7rem]" : "size-[0.8rem] sm:size-[0.85rem]",
+                  s.icon,
+                )}
                 aria-hidden
               />
             ) : (
               <Icon
-                className={cn("size-[0.8rem] sm:size-[0.85rem]", s.icon)}
+                className={cn(
+                  small ? "size-[0.7rem]" : "size-[0.8rem] sm:size-[0.85rem]",
+                  s.icon,
+                )}
                 aria-hidden
               />
             )}

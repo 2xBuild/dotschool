@@ -14,6 +14,7 @@ import type { BatchProgramDetails } from "@/components/dashboard/batch-types";
 import { enrollInBatch } from "@/server/batches/enroll";
 import { cn } from "@/lib/utils";
 import { useTabSwitchSound, useClickSound } from "@/hooks/use-app-sound";
+import { Plus } from "lucide-react";
 
 export type BatchTabItem = {
   id: string;
@@ -57,7 +58,7 @@ function formatBatchRange(startsAt: string, endsAt: string | null) {
 function buildBatchTagline(batchNumber: number, description: string | null) {
   const desc = description?.trim();
   if (desc) {
-    return `Batch ${batchNumber} - ${desc}`;
+    return desc;
   }
   return `Batch ${batchNumber}`;
 }
@@ -168,8 +169,52 @@ export function BatchTabs({
                   const s = batchListCardStyles(tone);
                   return (
                     <li key={batch.id} className={s.card}>
-                      <div className="relative z-10 flex items-center gap-4">
-                        <div className="min-w-0 flex-1">
+                      <div className="relative z-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                        {/* Mobile */}
+                        <div className="flex flex-col gap-2 sm:hidden">
+                          <div className="flex items-center gap-1">
+                            <BatchCardIconAvatarGroup
+                              iconKeys={batch.cardIconKeys}
+                              s={s}
+                              small
+                            />
+                            <span className={cn("text-xs", s.muted)}>·</span>
+                            <p className={cn("text-xs tabular-nums", s.seatsLabel)}>
+                              {batch.totalSeats} seats
+                            </p>
+                          </div>
+                          <p className={cn("text-balance", s.title)}>
+                            {batch.title}
+                          </p>
+                          <p className={cn(s.muted, "line-clamp-2 text-sm")}>
+                            {buildBatchTagline(batch.batchNumber, batch.description)}
+                          </p>
+                        </div>
+                        <div className="flex items-center justify-end gap-1.5 sm:hidden">
+                          <Link
+                            href={`/batches/${batch.id}`}
+                            className={cn(
+                              "inline-flex min-w-[4rem] items-center justify-center rounded-full border px-2.5 py-0.5 text-[0.65rem] font-medium",
+                              s.secondaryBtn,
+                            )}
+                          >
+                            More
+                          </Link>
+                          <button
+                            type="button"
+                            disabled={pending}
+                            onClick={() => { playClick(); onJoin(batch.id); }}
+                            className={cn(
+                              "inline-flex min-w-[4rem] items-center justify-center rounded-full border px-2.5 py-0.5 text-[0.65rem] font-medium disabled:pointer-events-none disabled:opacity-50",
+                              s.primaryBtn,
+                            )}
+                          >
+                            <Plus className="size-3 mr-1" />Apply
+                          </button>
+                        </div>
+
+                        {/* Desktop: original side-by-side layout */}
+                        <div className="hidden min-w-0 flex-1 sm:block">
                           <p className={cn("text-balance", s.title)}>
                             {batch.title}
                           </p>
@@ -177,8 +222,7 @@ export function BatchTabs({
                             {buildBatchTagline(batch.batchNumber, batch.description)}
                           </p>
                         </div>
-
-                        <div className="flex shrink-0 flex-col items-end gap-2">
+                        <div className="hidden shrink-0 flex-col items-end gap-2 sm:flex">
                           <BatchCardIconAvatarGroup
                             iconKeys={batch.cardIconKeys}
                             s={s}
@@ -192,22 +236,22 @@ export function BatchTabs({
                             <Link
                               href={`/batches/${batch.id}`}
                               className={cn(
-                                "inline-flex items-center justify-center rounded-full border px-3 py-1 text-xs font-medium",
+                                "inline-flex min-w-[4.5rem] items-center justify-center rounded-full border px-3 py-1 text-xs font-medium",
                                 s.secondaryBtn,
                               )}
                             >
-                              More detail
+                              More
                             </Link>
                             <button
                               type="button"
                               disabled={pending}
                               onClick={() => { playClick(); onJoin(batch.id); }}
                               className={cn(
-                                "inline-flex items-center justify-center rounded-full border px-3 py-1 text-xs font-medium disabled:pointer-events-none disabled:opacity-50",
+                                "inline-flex min-w-[4.5rem] items-center justify-center rounded-full border px-3 py-1 text-xs font-medium disabled:pointer-events-none disabled:opacity-50",
                                 s.primaryBtn,
                               )}
                             >
-                              Join batch
+                              <Plus className="size-3 mr-1" />Apply
                             </button>
                           </div>
                         </div>
@@ -244,8 +288,64 @@ export function BatchTabs({
                       const hasTest = showTestBtn && !!batch.questionSetId;
                       return (
                         <li key={batch.id} className={s.card}>
-                          <div className="relative z-10 flex items-center gap-4">
-                            <div className="min-w-0 flex-1">
+                          <div className="relative z-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                            {/* Mobile */}
+                            <div className="flex flex-col gap-2 sm:hidden">
+                              <div className="flex items-center gap-1">
+                                <BatchCardIconAvatarGroup
+                                  iconKeys={batch.cardIconKeys}
+                                  s={s}
+                                  small
+                                />
+                                <span className={cn("text-xs", s.muted)}>·</span>
+                                <p className={cn("text-xs tabular-nums", s.seatsLabel)}>
+                                  {batch.totalSeats} seats
+                                </p>
+                              </div>
+                              <p className={cn("text-balance", s.title)}>
+                                {batch.title}
+                              </p>
+                              <p className={cn(s.muted, "line-clamp-2 text-sm")}>
+                                {buildBatchTagline(batch.batchNumber, batch.description)}
+                              </p>
+                            </div>
+                            <div className="flex items-center justify-end gap-1.5 sm:hidden">
+                              <Link
+                                href={`/batches/${batch.id}`}
+                                className={cn(
+                                  "inline-flex min-w-[4rem] items-center justify-center rounded-full border px-2.5 py-0.5 text-[0.65rem] font-medium",
+                                  hasTest ? s.secondaryBtn : s.primaryBtn,
+                                )}
+                              >
+                                More
+                              </Link>
+                              {hasTest ? (
+                                batch.testStatus === "submitted" ? (
+                                  <span
+                                    className={cn(
+                                      "inline-flex min-w-[4rem] items-center justify-center rounded-full border px-2.5 py-0.5 text-[0.65rem] font-medium opacity-60 cursor-default",
+                                      s.secondaryBtn,
+                                    )}
+                                    title="Your test has been recorded. After the cutoff is announced, you can be part of this batch."
+                                  >
+                                    Submitted
+                                  </span>
+                                ) : (
+                                  <Link
+                                    href={`/e-test?batch=${batch.id}`}
+                                    className={cn(
+                                      "inline-flex min-w-[4rem] items-center justify-center rounded-full border px-2.5 py-0.5 text-[0.65rem] font-medium",
+                                      s.primaryBtn,
+                                    )}
+                                  >
+                                    Take test
+                                  </Link>
+                                )
+                              ) : null}
+                            </div>
+
+                            {/* Desktop: original side-by-side layout */}
+                            <div className="hidden min-w-0 flex-1 sm:block">
                               <p className={cn("text-balance", s.title)}>
                                 {batch.title}
                               </p>
@@ -253,8 +353,7 @@ export function BatchTabs({
                                 {buildBatchTagline(batch.batchNumber, batch.description)}
                               </p>
                             </div>
-
-                            <div className="flex shrink-0 flex-col items-end gap-2">
+                            <div className="hidden shrink-0 flex-col items-end gap-2 sm:flex">
                               <BatchCardIconAvatarGroup
                                 iconKeys={batch.cardIconKeys}
                                 s={s}
@@ -268,17 +367,17 @@ export function BatchTabs({
                                 <Link
                                   href={`/batches/${batch.id}`}
                                   className={cn(
-                                    "inline-flex items-center justify-center rounded-full border px-3 py-1 text-xs font-medium",
+                                    "inline-flex min-w-[4.5rem] items-center justify-center rounded-full border px-3 py-1 text-xs font-medium",
                                     hasTest ? s.secondaryBtn : s.primaryBtn,
                                   )}
                                 >
-                                  More details
+                                  More
                                 </Link>
                                 {hasTest ? (
                                   batch.testStatus === "submitted" ? (
                                     <span
                                       className={cn(
-                                        "inline-flex items-center justify-center rounded-full border px-3 py-1 text-xs font-medium opacity-60 cursor-default",
+                                        "inline-flex min-w-[4.5rem] items-center justify-center rounded-full border px-3 py-1 text-xs font-medium opacity-60 cursor-default",
                                         s.secondaryBtn,
                                       )}
                                       title="Your test has been recorded. After the cutoff is announced, you can be part of this batch."
@@ -289,7 +388,7 @@ export function BatchTabs({
                                     <Link
                                       href={`/e-test?batch=${batch.id}`}
                                       className={cn(
-                                        "inline-flex items-center justify-center rounded-full border px-3 py-1 text-xs font-medium",
+                                        "inline-flex min-w-[4.5rem] items-center justify-center rounded-full border px-3 py-1 text-xs font-medium",
                                         s.primaryBtn,
                                       )}
                                     >

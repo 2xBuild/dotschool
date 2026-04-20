@@ -93,7 +93,7 @@ const POSSIBLE_BATCHES_INFO =
 function buildPossibleBatchTagline(batchNumber: number, description: string | null) {
   const desc = description?.trim();
   if (desc) {
-    return `Batch ${batchNumber} - ${desc}`;
+    return desc;
   }
   return `Batch ${batchNumber}`;
 }
