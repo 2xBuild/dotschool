@@ -148,6 +148,7 @@ export function ProfileHeaderCard({
   updateProfileAction,
 }: ProfileHeaderCardProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [usernameError, setUsernameError] = useState<string | null>(null);
   const initials = toInitials(displayName);
   const providerLabel = formatProvider(provider);
   const [playClick] = useClickSound();
@@ -173,7 +174,7 @@ export function ProfileHeaderCard({
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => { playSoftClick(); setIsEditing(false); }}
+                  onClick={() => { playSoftClick(); setUsernameError(null); setIsEditing(false); }}
                   className="h-12 w-28 rounded-full"
                 >
                   Cancel
@@ -257,22 +258,40 @@ export function ProfileHeaderCard({
             <div className="space-y-2">
               <p className="text-sm font-medium text-foreground">Username</p>
               {isEditing ? (
-                <div className="flex items-center gap-2 rounded-2xl border border-border bg-background px-4 py-3 shadow-sm">
-                  <span className="text-sm font-medium text-muted-foreground">@</span>
-                  <input
-                    type="text"
-                    name="username"
-                    required
-                    pattern={usernameInputPattern}
-                    minLength={4}
-                    maxLength={32}
-                    defaultValue={username ?? ""}
-                    autoCapitalize="none"
-                    spellCheck={false}
-                    autoComplete="nickname"
-                    className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-                  />
-                </div>
+                <>
+                  <div className={cn(
+                    "flex items-center gap-2 rounded-2xl border bg-background px-4 py-3 shadow-sm",
+                    usernameError ? "border-destructive" : "border-border",
+                  )}>
+                    <span className="text-sm font-medium text-muted-foreground">@</span>
+                    <input
+                      type="text"
+                      name="username"
+                      required
+                      pattern={usernameInputPattern}
+                      minLength={4}
+                      maxLength={32}
+                      defaultValue={username ?? ""}
+                      autoCapitalize="none"
+                      spellCheck={false}
+                      autoComplete="nickname"
+                      className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                      onChange={(e) => {
+                        const val = e.target.value.trim().toLowerCase();
+                        if (val.length > 0 && val.length < 4) {
+                          setUsernameError("Username must be at least 4 characters");
+                        } else if (val.length > 0 && !new RegExp(`^${usernameInputPattern}$`).test(val)) {
+                          setUsernameError("Only lowercase letters, numbers, dots, and underscores");
+                        } else {
+                          setUsernameError(null);
+                        }
+                      }}
+                    />
+                  </div>
+                  {usernameError && (
+                    <p className="text-xs text-destructive">{usernameError}</p>
+                  )}
+                </>
               ) : (
                 <p className={cn("text-sm", username ? "text-foreground" : "text-muted-foreground")}>
                   {username ? `@${username}` : "Not added"}
