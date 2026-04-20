@@ -1,16 +1,13 @@
 import {
   SlashCommandBuilder,
-  EmbedBuilder,
+  ChatInputCommandInteraction,
   PermissionFlagsBits,
+  EmbedBuilder,
+  Role,
+  MessageFlags,
 } from 'discord.js';
 import { addTag, removeTag, getTagsForUser } from '../database/db';
-import { findRole } from '../lib/roles';
-import {
-  addRole as addDiscordRole,
-  removeRole as removeDiscordRole,
-} from '../discord';
-import type { Command, InteractionContext } from '../types';
-import { avatarUrl } from '../types';
+import { Command } from '../types';
 
 export const command: Command = {
   data: new SlashCommandBuilder()
@@ -21,139 +18,124 @@ export const command: Command = {
         .setName('add')
         .setDescription('Add a tag to a user (admin only)')
         .addUserOption((opt) =>
-          opt.setName('user').setDescription('Target user').setRequired(true),
+          opt.setName('user').setDescription('Target user').setRequired(true)
         )
         .addStringOption((opt) =>
-          opt.setName('tag').setDescription('Tag name').setRequired(true),
-        ),
+          opt.setName('tag').setDescription('Tag name').setRequired(true)
+        )
     )
     .addSubcommand((sub) =>
       sub
         .setName('remove')
         .setDescription('Remove a tag from a user (admin only)')
         .addUserOption((opt) =>
-          opt.setName('user').setDescription('Target user').setRequired(true),
+          opt.setName('user').setDescription('Target user').setRequired(true)
         )
         .addStringOption((opt) =>
-          opt.setName('tag').setDescription('Tag name').setRequired(true),
-        ),
+          opt.setName('tag').setDescription('Tag name').setRequired(true)
+        )
     )
     .addSubcommand((sub) =>
       sub
         .setName('list')
         .setDescription("List a user's tags")
         .addUserOption((opt) =>
-          opt.setName('user').setDescription('Target user').setRequired(true),
-        ),
+          opt.setName('user').setDescription('Target user').setRequired(true)
+        )
     ),
 
-  async execute(ctx: InteractionContext): Promise<void> {
-    const subcommand = ctx.options.getSubcommand(true);
+  async execute(interaction: ChatInputCommandInteraction): Promise<void> {
+    const subcommand = interaction.options.getSubcommand(true);
 
     if (subcommand === 'list') {
-      await handleList(ctx);
+      await handleList(interaction);
       return;
     }
 
-    if (!ctx.memberPermissions.has(PermissionFlagsBits.Administrator)) {
-      await ctx.reply({
+    if (!interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
+      await interaction.reply({
         content: 'You must be an administrator to add or remove tags.',
-        flags: 64,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
 
     if (subcommand === 'add') {
-      await handleAdd(ctx);
+      await handleAdd(interaction);
     } else if (subcommand === 'remove') {
-      await handleRemove(ctx);
+      await handleRemove(interaction);
     }
   },
 };
 
-async function handleList(ctx: InteractionContext): Promise<void> {
-  const targetUser = ctx.options.getUser('user', true)!;
-  await ctx.deferReply();
-
+async function handleList(interaction: ChatInputCommandInteraction): Promise<void> {
+  const targetUser = interaction.options.getUser('user', true);
+  await interaction.deferReply();
   const tags = await getTagsForUser(targetUser.id);
 
   const embed = new EmbedBuilder()
-    .setTitle(`Tags for ${targetUser.username}`)
+    .setTitle(`Tags for ${targetUser.tag}`)
     .setColor(0x57f287)
-    .setThumbnail(avatarUrl(targetUser));
+    .setThumbnail(targetUser.displayAvatarURL());
 
   if (tags.length === 0) {
     embed.setDescription('This user has no tags.');
   } else {
-    embed.setDescription(
-      tags.map((t: { tag: string }) => `• \`${t.tag}\``).join('\n'),
-    );
+    embed.setDescription(tags.map((t: { tag: string }) => `• \`${t.tag}\``).join('\n'));
     embed.setFooter({ text: `${tags.length} tag(s) total` });
   }
 
-  await ctx.editReply({ embeds: [embed] });
+  await interaction.editReply({ embeds: [embed] });
 }
 
-async function handleAdd(ctx: InteractionContext): Promise<void> {
-  const targetUser = ctx.options.getUser('user', true)!;
-  const tag = ctx.options.getString('tag', true)!.toLowerCase().trim();
+async function handleAdd(interaction: ChatInputCommandInteraction): Promise<void> {
+  const targetUser = interaction.options.getUser('user', true);
+  const tag = interaction.options.getString('tag', true).toLowerCase().trim();
 
-  await ctx.deferReply();
+  await interaction.deferReply();
 
-  const added = await addTag(targetUser.id, tag, ctx.user.id);
+  const added = await addTag(targetUser.id, tag, interaction.user.id);
 
   if (!added) {
-    await ctx.editReply({
+    await interaction.editReply({
       content: `Failed to add tag \`${tag}\` to <@${targetUser.id}>.`,
     });
     return;
   }
 
-  const roleResult = await syncRole(
-    ctx.guildId,
-    targetUser.id,
-    tag,
-    'add',
-    ctx.user.username,
-  );
+  const roleResult = await syncRole(interaction, targetUser.id, tag, 'add');
 
   const roleMsg = roleResult.success
     ? ` Discord role \`${tag}\` assigned.`
     : ` (Note: ${roleResult.reason})`;
 
-  await ctx.editReply({
+  await interaction.editReply({
     content: `Tag \`${tag}\` added to <@${targetUser.id}>.${roleMsg}`,
   });
 }
 
-async function handleRemove(ctx: InteractionContext): Promise<void> {
-  const targetUser = ctx.options.getUser('user', true)!;
-  const tag = ctx.options.getString('tag', true)!.toLowerCase().trim();
+async function handleRemove(interaction: ChatInputCommandInteraction): Promise<void> {
+  const targetUser = interaction.options.getUser('user', true);
+  const tag = interaction.options.getString('tag', true).toLowerCase().trim();
 
-  await ctx.deferReply();
+  await interaction.deferReply();
 
   const removed = await removeTag(targetUser.id, tag);
 
   if (!removed) {
-    await ctx.editReply({
+    await interaction.editReply({
       content: `<@${targetUser.id}> does not have the tag \`${tag}\`.`,
     });
     return;
   }
 
-  const roleResult = await syncRole(
-    ctx.guildId,
-    targetUser.id,
-    tag,
-    'remove',
-    ctx.user.username,
-  );
+  const roleResult = await syncRole(interaction, targetUser.id, tag, 'remove');
 
   const roleMsg = roleResult.success
     ? ` Discord role \`${tag}\` removed.`
     : ` (Note: ${roleResult.reason})`;
 
-  await ctx.editReply({
+  await interaction.editReply({
     content: `Tag \`${tag}\` removed from <@${targetUser.id}>.${roleMsg}`,
   });
 }
@@ -164,41 +146,41 @@ interface SyncResult {
 }
 
 async function syncRole(
-  guildId: string,
+  interaction: ChatInputCommandInteraction,
   targetUserId: string,
   tag: string,
-  action: 'add' | 'remove',
-  actorUsername: string,
+  action: 'add' | 'remove'
 ): Promise<SyncResult> {
-  if (!guildId) return { success: false, reason: 'Not in a guild.' };
+  if (!interaction.guild) {
+    return { success: false, reason: 'Not in a guild.' };
+  }
 
-  const role = await findRole(guildId, tag);
-  if (!role)
-    return { success: false, reason: `No Discord role named \`${tag}\` found.` };
+  const role = interaction.guild.roles.cache.find(
+    (r: Role) => r.name.toLowerCase() === tag.toLowerCase()
+  );
 
-  try {
-    if (action === 'add') {
-      await addDiscordRole(
-        guildId,
-        targetUserId,
-        role.id,
-        `Tag "${tag}" added by ${actorUsername}`,
-      );
-    } else {
-      await removeDiscordRole(
-        guildId,
-        targetUserId,
-        role.id,
-        `Tag "${tag}" removed by ${actorUsername}`,
-      );
-    }
-    return { success: true };
-  } catch (err) {
-    console.error('[Tag] Role sync failed:', err);
+  if (!role) {
     return {
       success: false,
-      reason:
-        'Could not modify role — check bot role hierarchy and permissions.',
+      reason: `No Discord role named \`${tag}\` found. Role sync skipped.`,
+    };
+  }
+
+  try {
+    const member = await interaction.guild.members.fetch(targetUserId);
+
+    if (action === 'add') {
+      await member.roles.add(role, `Tag \`${tag}\` added by ${interaction.user.tag}`);
+    } else {
+      await member.roles.remove(role, `Tag \`${tag}\` removed by ${interaction.user.tag}`);
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.error('[tag] Role sync failed:', err);
+    return {
+      success: false,
+      reason: 'Could not modify role — check bot role hierarchy and permissions.',
     };
   }
 }

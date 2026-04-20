@@ -2,12 +2,12 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  Client,
   EmbedBuilder,
 } from 'discord.js';
 import type { InferSelectModel } from 'drizzle-orm';
 import { botConcerns } from '@repo/db/schema';
 import { getConcern } from '../database/db';
-import { editMessage } from '../discord';
 import { MIN_VOTERS_FOR_MUTE, HEALTHY_RATIO } from './concern-vote-thresholds';
 
 export type ConcernRow = InferSelectModel<typeof botConcerns>;
@@ -29,10 +29,10 @@ function statusField(concern: ConcernRow): string {
       `Open  **${up}** / 👎 **${down}** (${total} total voter${total === 1 ? '' : 's'}) · Requested action: **${concern.requestedAction}**\nMute at **${MIN_VOTERS_FOR_MUTE}** voters · Full action requires **10%** of members with **${HEALTHY_RATIO}x** ratio`,
     );
   }
-  const action = concern.actionTaken ? ` (${concern.actionTaken})` : '';
-  return truncateField(
-    `**${concern.status}**${action} • ⬆️ **${up}** / ⬇️ **${down}**`,
-  );
+  const action = concern.actionTaken
+    ? ` (${concern.actionTaken})`
+    : '';
+  return truncateField(`**${concern.status}**${action} • ⬆️ **${up}** / ⬇️ **${down}**`);
 }
 
 /** Embed for the public concern board message (kept in sync as votes come in). */
@@ -49,11 +49,7 @@ export function buildConcernEmbed(concern: ConcernRow): EmbedBuilder {
       { name: 'Reported by', value: reporterValue, inline: true },
       { name: 'Against', value: `<@${concern.targetId}>`, inline: true },
       { name: 'Reason', value: truncateField(concern.reason) },
-      {
-        name: 'Requested Action',
-        value: concern.requestedAction,
-        inline: true,
-      },
+      { name: 'Requested Action', value: concern.requestedAction, inline: true },
       { name: 'Status', value: statusField(concern), inline: false },
     )
     .setFooter({
@@ -66,9 +62,7 @@ export function buildConcernEmbed(concern: ConcernRow): EmbedBuilder {
 }
 
 /** Upvote / Downvote buttons while open; components cleared when closed. */
-export function buildConcernComponents(
-  concern: ConcernRow,
-): ActionRowBuilder<ButtonBuilder>[] {
+export function buildConcernComponents(concern: ConcernRow): ActionRowBuilder<ButtonBuilder>[] {
   if (concern.status !== 'open') {
     return [];
   }
@@ -94,15 +88,20 @@ export function buildConcernComponents(
 
 /** Re-fetch concern from DB and edit the board message (channel/message ids must be set). */
 export async function refreshConcernBoardMessage(
+  client: Client,
   concernId: string,
 ): Promise<void> {
   const concern = await getConcern(concernId);
   if (!concern?.channelId || !concern.messageId) return;
 
   try {
-    await editMessage(concern.channelId, concern.messageId, {
-      embeds: [buildConcernEmbed(concern).toJSON()],
-      components: buildConcernComponents(concern).map((c) => c.toJSON()),
+    const raw = await client.channels.fetch(concern.channelId);
+    if (!raw?.isTextBased()) return;
+
+    const message = await raw.messages.fetch(concern.messageId);
+    await message.edit({
+      embeds: [buildConcernEmbed(concern)],
+      components: buildConcernComponents(concern),
     });
   } catch (err) {
     console.error('[concern] refreshConcernBoardMessage failed:', err);

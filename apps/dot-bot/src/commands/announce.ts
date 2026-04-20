@@ -1,12 +1,15 @@
 import {
   SlashCommandBuilder,
-  EmbedBuilder,
-  ChannelType,
+  ChatInputCommandInteraction,
   PermissionFlagsBits,
+  EmbedBuilder,
+  TextChannel,
+  ChannelType,
+  MessageFlags,
+  GuildMember,
 } from 'discord.js';
 import { saveAnnouncement } from '../database/db';
-import { sendMessage, fetchRoles } from '../discord';
-import type { Command, InteractionContext } from '../types';
+import { Command } from '../types';
 
 const ANNOUNCE_ALLOWED_ROLES = new Set(['admin', 'volunteer', 'owner']);
 
@@ -18,32 +21,39 @@ export const command: Command = {
       option
         .setName('message')
         .setDescription('The announcement message')
-        .setRequired(true),
+        .setRequired(true)
     )
     .addChannelOption((option) =>
       option
         .setName('channel')
-        .setDescription(
-          'Channel to post the announcement in (defaults to current channel)',
-        )
+        .setDescription('Channel to post the announcement in (defaults to current channel)')
         .addChannelTypes(ChannelType.GuildText)
-        .setRequired(false),
+        .setRequired(false)
     ),
 
-  async execute(ctx: InteractionContext): Promise<void> {
-    if (!(await canSendAnnouncement(ctx))) {
-      await ctx.reply({
+  async execute(interaction: ChatInputCommandInteraction): Promise<void> {
+    if (!(await canSendAnnouncement(interaction))) {
+      await interaction.reply({
         content: 'Only admin, volunteer, or owner can use this command.',
-        flags: 64,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
 
-    const message = ctx.options.getString('message', true)!;
-    const targetChannel = ctx.options.getChannel('channel');
-    const channelId = targetChannel?.id ?? ctx.channelId;
+    const message = interaction.options.getString('message', true);
+    const targetChannel =
+      (interaction.options.getChannel('channel') as TextChannel | null) ??
+      (interaction.channel as TextChannel);
 
-    await ctx.deferReply({ ephemeral: true });
+    if (!targetChannel || targetChannel.type !== ChannelType.GuildText) {
+      await interaction.reply({
+        content: 'Could not resolve a valid text channel.',
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
+    }
+
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     const embed = new EmbedBuilder()
       .setTitle('Announcement')
@@ -53,36 +63,40 @@ export const command: Command = {
       .setTimestamp();
 
     try {
-      await sendMessage(channelId, { embeds: [embed.toJSON()] });
-      await saveAnnouncement(ctx.user.id, message, channelId);
-      await ctx.editReply({
-        content: `Announcement posted in <#${channelId}>.`,
+      await targetChannel.send({ embeds: [embed] });
+
+      await saveAnnouncement(interaction.user.id, message, targetChannel.id);
+
+      await interaction.editReply({
+        content: `Announcement posted in <#${targetChannel.id}>.`,
       });
     } catch (err) {
       console.error('[announce] Failed to send announcement:', err);
-      await ctx.editReply({
-        content:
-          'Failed to send the announcement. Check my permissions in that channel.',
+      await interaction.editReply({
+        content: 'Failed to send the announcement. Check my permissions in that channel.',
       });
     }
   },
 };
 
 async function canSendAnnouncement(
-  ctx: InteractionContext,
+  interaction: ChatInputCommandInteraction,
 ): Promise<boolean> {
-  if (ctx.memberPermissions.has(PermissionFlagsBits.Administrator)) {
+  if (interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
     return true;
   }
 
-  if (!ctx.guildId) return false;
+  if (!interaction.guild) {
+    return false;
+  }
 
-  const guildRoles = await fetchRoles(ctx.guildId);
-  const memberRoleSet = new Set(ctx.memberRoles);
-  return guildRoles.some(
-    (role) =>
-      memberRoleSet.has(role.id) &&
-      ANNOUNCE_ALLOWED_ROLES.has(role.name.toLowerCase().trim()),
+  const member =
+    interaction.member instanceof GuildMember
+      ? interaction.member
+      : await interaction.guild.members.fetch(interaction.user.id);
+
+  return member.roles.cache.some((role) =>
+    ANNOUNCE_ALLOWED_ROLES.has(role.name.toLowerCase().trim()),
   );
 }
 

@@ -1,56 +1,54 @@
-import { config } from './config';
-import { startServer } from './server';
-import { initializeVerifiedAccess } from './lib/verified-access';
-import { testConnection } from './database/db';
+import 'dotenv/config';
+import { Client, Collection, GatewayIntentBits, Partials } from 'discord.js';
+import { Command } from './types';
+import commands from './commands';
+import { deployCommands } from './deploy-commands';
 
-let server: ReturnType<typeof startServer>;
+import * as readyEvent from './events/ready';
+import * as guildMemberAddEvent from './events/guildMemberAdd';
+import * as interactionCreateEvent from './events/interactionCreate';
 
-const shutdown = () => {
-  console.log('[Shutdown] Graceful shutdown...');
-  server?.close();
-  process.exit(0);
-};
+import { startWebhookServer } from './webhook';
 
-process.on('SIGTERM', shutdown);
-process.on('SIGINT', shutdown);
+const { DISCORD_TOKEN } = process.env;
+
+if (!DISCORD_TOKEN) {
+  console.error('[Startup] Missing DISCORD_TOKEN in environment. Check your .env file.');
+  process.exit(1);
+}
+
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildModeration,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+  partials: [Partials.Channel],
+});
+
+client.commands = new Collection<string, Command>();
+
+for (const cmd of commands) {
+  client.commands.set(cmd.data.name, cmd);
+  console.log(`[Commands] Loaded /${cmd.data.name}`);
+}
+
+readyEvent.register(client);
+guildMemberAddEvent.register(client);
+interactionCreateEvent.register(client);
 
 async function main(): Promise<void> {
-  // Validate database connection before starting
   try {
-    await testConnection();
-    console.log('[Startup] Database connection OK');
+    await deployCommands();
+    await client.login(DISCORD_TOKEN);
+    startWebhookServer(client);
   } catch (err) {
-    console.error('[Startup] Database connection failed:', err);
+    console.error('[Startup] Failed to start bot:', err);
     process.exit(1);
-  }
-
-  server = startServer();
-
-  console.log('[Startup] Bot ready (HTTP interactions mode)');
-
-  // Initialize verified role and channel permissions via REST API (non-blocking).
-  if (config.verifiedRoleId) {
-    console.log(`[Startup] Verified role pre-configured: ${config.verifiedRoleId}`);
-  } else {
-    const INIT_TIMEOUT_MS = 15_000;
-    Promise.race([
-      initializeVerifiedAccess(config.guildId),
-      new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Timed out after 15s')), INIT_TIMEOUT_MS),
-      ),
-    ])
-      .then(({ roleCreatedOrFound, generalLocked }) => {
-        console.log(
-          `[Startup] Verified role ready as "${roleCreatedOrFound.name}". #general restricted: ${generalLocked ? 'yes' : 'no'}.`,
-        );
-      })
-      .catch((err) => {
-        console.error('[Startup] Failed to initialize verified access:', err);
-      });
   }
 }
 
-main().catch((err) => {
-  console.error('[Startup] Fatal error:', err);
-  process.exit(1);
-});
+void main();
