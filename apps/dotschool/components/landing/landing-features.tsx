@@ -24,7 +24,7 @@ interface Feature {
 }
 
 const cardBase =
-  "group flex h-full flex-col items-center justify-center rounded-2xl border border-[#1f49ff]/30 bg-transparent p-6 text-center transition-all duration-300 hover:border-transparent hover:bg-[linear-gradient(180deg,#3158ff_0%,#1f49ff_60%,#2552ff_100%)] hover:text-white [&:hover_*]:!text-white [&:hover_*]:!border-white/20 [&:hover_*]:!stroke-white";
+  "group flex h-full flex-col items-center justify-center rounded-2xl border border-[#1f49ff]/15 bg-transparent p-4 text-center sm:p-6";
 const cardFont: React.CSSProperties = {
   fontFamily: "var(--font-mono)",
 };
@@ -39,9 +39,9 @@ const features: Feature[] = [
             {Array.from({ length: 3 }).map((_, i) => (
               <div
                 key={i}
-                className="flex size-8 items-center justify-center rounded-full border border-[#1f49ff]/15 bg-[#1f49ff]/5 group-hover:!border-white/30 group-hover:!bg-white/15"
+                className="flex size-6 items-center justify-center rounded-full border border-[#1f49ff]/15 bg-[#1f49ff]/5 sm:size-8"
               >
-                <div className="size-3.5 rounded-full bg-[#1f49ff]/25 group-hover:!bg-white/60" />
+                <div className="size-2.5 rounded-full bg-[#1f49ff]/25 sm:size-3.5" />
               </div>
             ))}
           </div>
@@ -49,7 +49,7 @@ const features: Feature[] = [
             Limited spots
           </span>
         </div>
-        <p className="text-sm uppercase tracking-widest text-[#555]" style={cardFont}>
+        <p className="text-xs uppercase tracking-widest text-[#555] sm:text-sm" style={cardFont}>
           Entrance test to filter passionate, high-energy learners
         </p>
       </>
@@ -64,7 +64,7 @@ const features: Feature[] = [
           {
             label: "Weekly tests",
             icon: (
-              <svg viewBox="0 0 24 24" className="size-10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <svg viewBox="0 0 24 24" className="size-7 sm:size-10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 11l3 3L22 4" />
                 <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
               </svg>
@@ -73,7 +73,7 @@ const features: Feature[] = [
           {
             label: "Hackathons",
             icon: (
-              <svg viewBox="0 0 24 24" className="size-10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <svg viewBox="0 0 24 24" className="size-7 sm:size-10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="16 18 22 12 16 6" />
                 <polyline points="8 6 2 12 8 18" />
               </svg>
@@ -82,7 +82,7 @@ const features: Feature[] = [
           {
             label: "Prizes",
             icon: (
-              <svg viewBox="0 0 24 24" className="size-10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <svg viewBox="0 0 24 24" className="size-7 sm:size-10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M6 9H4.5a2.5 2.5 0 010-5H6" />
                 <path d="M18 9h1.5a2.5 2.5 0 000-5H18" />
                 <path d="M4 22h16" />
@@ -95,10 +95,10 @@ const features: Feature[] = [
         ].map((item) => (
           <div
             key={item.label}
-            className="flex flex-col items-center justify-center gap-3 px-6 py-4"
+            className="flex flex-col items-center justify-center gap-2 px-3 py-3 sm:gap-3 sm:px-6 sm:py-4"
           >
             <div className="text-[#1f49ff]/50">{item.icon}</div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#555]" style={cardFont}>
+            <span className="text-[0.6rem] font-semibold uppercase tracking-wider text-[#555] sm:text-xs" style={cardFont}>
               {item.label}
             </span>
           </div>
@@ -112,7 +112,7 @@ const features: Feature[] = [
     blue: true,
     content: (
       <div className="flex flex-col items-center gap-1.5" style={cardFont}>
-        <p className="text-sm uppercase tracking-widest text-[#555] lg:max-w-md lg:text-base">
+        <p className="text-xs uppercase tracking-widest text-[#555] sm:text-sm lg:max-w-md lg:text-base">
           Learn by building <span className="font-bold text-[#1f49ff]">real-world</span> projects. Earn <span className="font-bold text-[#1f49ff]">rewards</span>, certificates and <span className="font-bold text-[#1f49ff]">reputation</span> that matters. </p>
       </div>
     ),
@@ -125,7 +125,7 @@ const features: Feature[] = [
           {globalCommunityFlags.map((country, i) => (
             <li
               key={country.code}
-              className={`relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white ${
+              className={`relative flex size-6 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white sm:size-8 ${
                 i > 0 ? "-ml-3" : ""
               }`}
               style={{ zIndex: globalCommunityFlags.length - i }}
@@ -137,7 +137,7 @@ const features: Feature[] = [
             </li>
           ))}
         </ul>
-        <p className="text-sm uppercase tracking-widest text-[#555]" style={cardFont}>
+        <p className="text-xs uppercase tracking-widest text-[#555] sm:text-sm" style={cardFont}>
           Learn with cracked global peers
         </p>
       </>
@@ -147,7 +147,7 @@ const features: Feature[] = [
     key: "free",
     content: (
       <div className="flex items-center justify-center gap-4">
-        <span className="text-6xl font-extrabold leading-none tracking-tighter text-[#1f49ff]/60" style={cardFont}>
+        <span className="text-4xl font-extrabold leading-none tracking-tighter text-[#1f49ff]/60 sm:text-6xl" style={cardFont}>
           $0
         </span>
         <div className="flex flex-col items-start gap-1 leading-tight">
@@ -169,7 +169,7 @@ const features: Feature[] = [
     span: 2,
     content: (
       <div className="flex flex-col items-center justify-center gap-5 text-center">
-        <p className="text-sm uppercase tracking-widest text-[#555] lg:text-base" style={cardFont}>
+        <p className="text-xs uppercase tracking-widest text-[#555] sm:text-sm lg:text-base" style={cardFont}>
           Find your type of people and
 
         </p>
@@ -236,19 +236,6 @@ const features: Feature[] = [
   },
 ];
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.06,
-      duration: 0.5,
-      ease: [0.25, 0.1, 0.25, 1] as const,
-    },
-  }),
-};
-
 export function LandingFeatures() {
   return (
     <section
@@ -256,29 +243,30 @@ export function LandingFeatures() {
       className="scroll-mt-24 px-6 sm:px-12 lg:px-20 xl:px-28"
       aria-labelledby="landing-features-heading"
     >
-      <div className="mb-10">
-        <p className="pixel-kicker text-center text-2xl text-[#1f49ff]">
+      <div className="mb-6 sm:mb-10">
+        <p className="pixel-kicker text-center text-xl text-[#1f49ff] sm:text-2xl">
           Features
         </p>
       </div>
 
-      <motion.div
-        className="grid auto-rows-fr gap-2 lg:grid-cols-3"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.15 }}
-      >
+      <div className="grid auto-rows-fr gap-2 lg:grid-cols-3">
         {features.map((feature, i) => (
           <motion.div
             key={feature.key}
             className={`h-full ${feature.span === 2 ? "lg:col-span-2" : ""}`}
-            variants={cardVariants}
-            custom={i}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.1 }}
+            transition={{
+              delay: i * 0.06,
+              duration: 0.5,
+              ease: [0.25, 0.1, 0.25, 1] as const,
+            }}
           >
             <div className={cardBase}>{feature.content}</div>
           </motion.div>
         ))}
-      </motion.div>
+      </div>
     </section>
   );
 }

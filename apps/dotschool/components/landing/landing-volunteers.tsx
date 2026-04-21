@@ -16,7 +16,7 @@ export function LandingVolunteers() {
         <p className="pixel-kicker text-[#1f49ff]">Contribute</p>
 
         <p className="mx-auto mt-4 max-w-md text-pretty text-sm leading-6 text-[#666] sm:text-base">
-          Share your expertise, operate batches, write content etc. Give back to the community. 
+          Share your expertise, mentor learners, write content, or help operate batches. Give back to the community.
         </p>
 
         <div className="flex items-center justify-center gap-2">
@@ -24,7 +24,7 @@ export function LandingVolunteers() {
             href="/volunteer"
             className={`${ctaButtonSizeClassName} bg-[#1f49ff] text-white hover:bg-[#1a3fd9]`}
           >
-            Be volunteer
+            Volunteer
             <ArrowUpRight className="size-4 stroke-[2]" />
           </SoundLink>
           <SoundLink

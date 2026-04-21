@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
 import { cn } from "@/lib/utils";
-import { useClickSound } from "@/hooks/use-app-sound";
+import { useHowItWorksClickSound } from "@/hooks/use-app-sound";
 
 type HowItWorksVisual =
   | "apply"
@@ -418,59 +418,75 @@ function VisualArt({ visual }: { visual: HowItWorksVisual }) {
       );
     }
 
-    case "volunteers":
+    case "volunteers": {
+      const roles: { role: string; icon: React.ReactNode }[] = [
+        {
+          role: "Mentor",
+          icon: (
+            <>
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 00-3-3.87" />
+              <path d="M16 3.13a4 4 0 010 7.75" />
+            </>
+          ),
+        },
+        {
+          role: "Writer",
+          icon: (
+            <>
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" />
+            </>
+          ),
+        },
+        {
+          role: "Moderator",
+          icon: (
+            <>
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </>
+          ),
+        },
+        {
+          role: "Developer",
+          icon: (
+            <>
+              <polyline points="16 18 22 12 16 6" />
+              <polyline points="8 6 2 12 8 18" />
+            </>
+          ),
+        },
+      ];
+
       return (
         <div className="relative flex h-full w-full items-center justify-center">
-          <div className="grid w-full max-w-[28rem] grid-cols-2 gap-3 md:gap-4">
-            {[
-              { role: "Mentor", bars: 3 },
-              { role: "Reviewer", bars: 2 },
-              { role: "Organizer", bars: 3 },
-              { role: "Builder", bars: 2 },
-            ].map((v, i) => (
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {roles.map((v) => (
               <div
                 key={v.role}
-                className={cn(
-                  "flex items-center gap-3 rounded-2xl border px-4 py-3.5",
-                  i % 3 === 0
-                    ? "border-white/50 bg-white/10"
-                    : "border-white/20 bg-white/5",
-                )}
+                className="flex items-center gap-2.5 rounded-full border border-white/20 bg-white/5 px-4 py-2.5"
               >
-                <div
-                  className={cn(
-                    "flex size-11 shrink-0 items-center justify-center rounded-full border",
-                    i % 3 === 0 ? "border-white bg-white/15" : "border-white/35 bg-white/5",
-                  )}
+                <svg
+                  viewBox="0 0 24 24"
+                  className="size-4 text-white/70"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 >
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="size-5 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
-                </div>
-                <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-                  <span className="text-[0.75rem] font-medium uppercase tracking-wider text-white">
-                    {v.role}
-                  </span>
-                  <div className="flex flex-col gap-1">
-                    <div className="h-1.5 w-full rounded-full bg-white/25" />
-                    {v.bars >= 2 && <div className="h-1.5 w-3/4 rounded-full bg-white/15" />}
-                    {v.bars >= 3 && <div className="h-1.5 w-1/2 rounded-full bg-white/10" />}
-                  </div>
-                </div>
+                  {v.icon}
+                </svg>
+                <span className="text-[0.72rem] font-medium text-white/90">
+                  {v.role}
+                </span>
               </div>
             ))}
           </div>
         </div>
       );
+    }
 
     case "compete":
       return (
@@ -584,7 +600,7 @@ export default function HowItWorks({
 }: HowItWorksProps) {
   const tabItems = items.length > 0 ? items : HOW_IT_WORKS_ITEMS;
   const [activeIndex, setActiveIndex] = useState(0);
-  const [playClick] = useClickSound();
+  const [playClick] = useHowItWorksClickSound();
   const [isPaused, setIsPaused] = useState(false);
   const [isInView, setIsInView] = useState(true);
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -597,9 +613,9 @@ export default function HowItWorks({
   const handleTabClick = useCallback(
     (index: number) => {
       if (index === activeIndex) return;
-      playClick();
       setActiveIndex(index);
       setIsPaused(false);
+      try { playClick(); } catch { /* audio may be locked on mobile */ }
     },
     [activeIndex, playClick],
   );
@@ -660,8 +676,8 @@ export default function HowItWorks({
           <div className="order-1 flex lg:col-span-7">
             <div
               className="relative w-full"
-              onMouseEnter={() => setIsPaused(true)}
-              onMouseLeave={() => setIsPaused(false)}
+              onPointerEnter={(e) => { if (e.pointerType === "mouse") setIsPaused(true); }}
+              onPointerLeave={(e) => { if (e.pointerType === "mouse") setIsPaused(false); }}
             >
               <div className="relative min-h-[420px] overflow-hidden rounded-[2.25rem] border border-[#1f49ff] bg-[#1f49ff] p-2 shadow-sm md:min-h-[520px]">
                 <AnimatePresence initial={false} mode="wait">

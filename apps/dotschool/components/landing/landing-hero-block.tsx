@@ -23,7 +23,7 @@ export function LandingHeroBlock() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.12),transparent_34%),linear-gradient(180deg,#3158ff_0%,#1f49ff_60%,#2552ff_100%)]" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-white/25" />
 
-      <div className="relative z-10 flex min-h-[700px] flex-col px-5 pb-0 pt-5 sm:px-8 sm:pb-10 sm:pt-6 lg:min-h-[760px] lg:px-12 lg:pb-0">
+      <div className="relative z-10 flex min-h-[580px] flex-col px-5 pb-0 pt-5 sm:min-h-[700px] sm:px-8 sm:pb-10 sm:pt-6 lg:min-h-[760px] lg:px-12 lg:pb-0">
         <div className="flex items-start justify-between gap-4">
           <Logo className="text-xl text-white sm:text-2xl [&>span:first-of-type]:bg-white" />
 
@@ -36,7 +36,7 @@ export function LandingHeroBlock() {
         </div>
 
         <div className="mt-6 flex flex-1 items-end justify-center sm:mt-8 sm:items-center lg:mt-10">
-          <div className="relative flex min-h-[520px] w-full max-w-[1180px] items-center justify-center pb-24 sm:pb-28 lg:min-h-[620px] lg:pb-32">
+          <div className="relative flex min-h-[420px] w-full max-w-[1180px] items-center justify-center pb-20 sm:min-h-[520px] sm:pb-28 lg:min-h-[620px] lg:pb-32">
             <div className="relative z-10 flex max-w-[54rem] flex-col items-center justify-center text-center">
               <p
                 className="pixel-kicker text-[0.72rem] font-medium uppercase tracking-[0.28em] text-white/68 sm:text-xs"
@@ -45,13 +45,13 @@ export function LandingHeroBlock() {
               </p>
               <h1
                 id="landing-hero-heading"
-                className="landing-display mt-4 max-w-[16ch] text-balance text-[2.8rem] leading-[1.05] text-white lg:text-7xl"
+                className="landing-display mt-3 max-w-[16ch] text-balance text-[2.2rem] leading-[1.05] text-white sm:mt-4 sm:text-[2.8rem] lg:text-7xl"
                 style={{ fontFamily: "var(--font-open-sauce)", textTransform: "none" }}
               >
                 Self Study like never before
               </h1>
               <p
-                className="mt-4 max-w-sm text-pretty text-md leading-6 text-white/80 sm:max-w-lg sm:text-base"
+                className="mt-3 max-w-sm text-pretty text-sm leading-5 text-white/80 sm:mt-4 sm:text-md sm:leading-6 sm:max-w-lg"
                 style={{ fontFamily: "var(--font-open-sauce)" }}
               >
                 with cracked peers and mentors. build, compete, chill, climb leaderboard and earn prizes, recognition.
