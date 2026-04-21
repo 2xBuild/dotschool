@@ -109,8 +109,8 @@ function VisualFrame({
   description: string;
 }) {
   return (
-    <div className="relative flex h-full flex-col items-center justify-center gap-7 overflow-hidden rounded-[2rem] bg-[#1f49ff] px-6 py-8 font-mono md:gap-9 md:px-10 md:py-12">
-      <p className="max-w-xl text-pretty text-center text-sm leading-relaxed text-white/88 md:text-[0.98rem]">
+    <div className="relative flex h-full flex-col items-center justify-center gap-5 overflow-hidden rounded-[2rem] bg-[#1f49ff] px-4 py-6 font-mono md:gap-9 md:px-10 md:py-12">
+      <p className="max-w-xl text-pretty text-center text-xs leading-relaxed text-white/88 md:text-[0.98rem]">
         {description}
       </p>
       <div className="relative flex w-full items-center justify-center">
@@ -386,18 +386,18 @@ function VisualArt({ visual }: { visual: HowItWorksVisual }) {
           <div className="relative flex items-center justify-center">
             <div
               aria-hidden
-              className="absolute left-6 right-6 top-7 h-px border-t border-dashed border-white/25"
+              className="absolute left-6 right-6 top-5 h-px border-t border-dashed border-white/25 md:top-7"
             />
-            <div className="relative flex items-start gap-4 md:gap-6">
+            <div className="relative flex items-start gap-2.5 md:gap-6">
               {actions.map((a) => (
                 <div
                   key={a.label}
-                  className="flex w-14 flex-col items-center gap-2 md:w-16"
+                  className="flex w-11 flex-col items-center gap-1.5 md:w-16 md:gap-2"
                 >
-                  <span className="flex size-14 items-center justify-center rounded-full bg-white text-[#1f49ff] shadow-[0_0_0_4px_rgba(31,73,255,1)] md:size-14">
+                  <span className="flex size-10 items-center justify-center rounded-full bg-white text-[#1f49ff] shadow-[0_0_0_3px_rgba(31,73,255,1)] md:size-14 md:shadow-[0_0_0_4px_rgba(31,73,255,1)]">
                     <svg
                       viewBox="0 0 24 24"
-                      className="size-5"
+                      className="size-4 md:size-5"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="1.8"
@@ -407,7 +407,7 @@ function VisualArt({ visual }: { visual: HowItWorksVisual }) {
                       {a.icon}
                     </svg>
                   </span>
-                  <span className="text-[0.6rem] font-medium uppercase tracking-wider text-white/80">
+                  <span className="text-[0.5rem] font-medium uppercase tracking-wider text-white/80 md:text-[0.6rem]">
                     {a.label}
                   </span>
                 </div>
@@ -461,15 +461,15 @@ function VisualArt({ visual }: { visual: HowItWorksVisual }) {
 
       return (
         <div className="relative flex h-full w-full items-center justify-center">
-          <div className="flex flex-wrap items-center justify-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3">
             {roles.map((v) => (
               <div
                 key={v.role}
-                className="flex items-center gap-2.5 rounded-full border border-white/20 bg-white/5 px-4 py-2.5"
+                className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-2 md:gap-2.5 md:px-4 md:py-2.5"
               >
                 <svg
                   viewBox="0 0 24 24"
-                  className="size-4 text-white/70"
+                  className="size-3.5 text-white/70 md:size-4"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="1.8"
@@ -478,7 +478,7 @@ function VisualArt({ visual }: { visual: HowItWorksVisual }) {
                 >
                   {v.icon}
                 </svg>
-                <span className="text-[0.72rem] font-medium text-white/90">
+                <span className="text-[0.62rem] font-medium text-white/90 md:text-[0.72rem]">
                   {v.role}
                 </span>
               </div>
@@ -491,8 +491,8 @@ function VisualArt({ visual }: { visual: HowItWorksVisual }) {
     case "compete":
       return (
         <div className="relative flex h-full w-full items-center justify-center">
-          <div className="w-full max-w-[30rem] space-y-3">
-            <div className="mb-1 flex items-center justify-between text-[0.65rem] uppercase tracking-widest text-white/50">
+          <div className="w-full max-w-[30rem] space-y-2 md:space-y-3">
+            <div className="mb-1 flex items-center justify-between text-[0.55rem] uppercase tracking-widest text-white/50 md:text-[0.65rem]">
               <span>Leaderboard</span>
               <span>Week 14</span>
             </div>
@@ -503,10 +503,10 @@ function VisualArt({ visual }: { visual: HowItWorksVisual }) {
               { rank: "4", width: "w-2/3", top: false },
               { rank: "5", width: "w-1/2", top: false },
             ].map((row) => (
-              <div key={row.rank} className="flex items-center gap-3">
+              <div key={row.rank} className="flex items-center gap-2 md:gap-3">
                 <span
                   className={cn(
-                    "flex size-7 items-center justify-center rounded-full text-[0.7rem] font-medium tabular-nums",
+                    "flex size-6 items-center justify-center rounded-full text-[0.6rem] font-medium tabular-nums md:size-7 md:text-[0.7rem]",
                     row.top
                       ? "bg-white text-[#1f49ff]"
                       : "border border-white/25 text-white/60",
@@ -517,7 +517,7 @@ function VisualArt({ visual }: { visual: HowItWorksVisual }) {
                 <div className="flex-1">
                   <div
                     className={cn(
-                      "h-2.5 rounded-full",
+                      "h-2 rounded-full md:h-2.5",
                       row.top ? "bg-white" : "bg-white/25",
                       row.width,
                     )}
@@ -532,13 +532,13 @@ function VisualArt({ visual }: { visual: HowItWorksVisual }) {
     case "recognition":
       return (
         <div className="relative flex h-full w-full items-center justify-center">
-          <div className="flex items-end gap-8 md:gap-10">
+          <div className="flex items-end gap-5 md:gap-10">
             {[
-              { size: "size-16 md:size-20", icon: "medal" },
-              { size: "size-24 md:size-28", icon: "trophy" },
-              { size: "size-16 md:size-20", icon: "star" },
+              { size: "size-12 md:size-20", icon: "medal" },
+              { size: "size-18 md:size-28", icon: "trophy" },
+              { size: "size-12 md:size-20", icon: "star" },
             ].map((b, i) => (
-              <div key={i} className="flex flex-col items-center gap-3">
+              <div key={i} className="flex flex-col items-center gap-2 md:gap-3">
                 <div
                   className={cn(
                     "flex items-center justify-center rounded-full border",
@@ -550,7 +550,7 @@ function VisualArt({ visual }: { visual: HowItWorksVisual }) {
                 >
                   <svg
                     viewBox="0 0 24 24"
-                    className={cn(i === 1 ? "size-10 md:size-12" : "size-7 md:size-9", "text-white")}
+                    className={cn(i === 1 ? "size-7 md:size-12" : "size-5 md:size-9", "text-white")}
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="1.6"
