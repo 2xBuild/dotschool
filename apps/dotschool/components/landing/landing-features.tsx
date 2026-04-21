@@ -245,7 +245,7 @@ export function LandingFeatures() {
     >
       <div className="mb-6 sm:mb-10">
         <p className="pixel-kicker text-center text-xl text-[#1f49ff] sm:text-2xl">
-          Features
+          What you get
         </p>
       </div>
 

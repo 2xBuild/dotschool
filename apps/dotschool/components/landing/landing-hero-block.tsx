@@ -6,7 +6,7 @@ import { SoundLink } from "@/components/landing/sound-link";
 
 import { StudyIllus } from "./study-illus";
 
-const navButtonSize = "inline-flex h-9 items-center justify-center gap-2 rounded-full px-5 text-sm font-semibold";
+const navButtonSize = "inline-flex h-6 items-center justify-center gap-1 rounded-full px-2.5 text-[0.65rem] font-semibold sm:h-9 sm:gap-2 sm:px-5 sm:text-sm";
 
 const missionButtonClassName =
   `${navButtonSize} border border-white/28 bg-white/10 text-white shadow-none transition-colors duration-200 hover:bg-white hover:text-[#1f49ff]`;
@@ -25,12 +25,12 @@ export function LandingHeroBlock() {
 
       <div className="relative z-10 flex min-h-[580px] flex-col px-5 pb-0 pt-5 sm:min-h-[700px] sm:px-8 sm:pb-10 sm:pt-6 lg:min-h-[760px] lg:px-12 lg:pb-0">
         <div className="flex items-start justify-between gap-4">
-          <Logo className="text-xl text-white sm:text-2xl [&>span:first-of-type]:bg-white" />
+          <Logo className="text-base text-white sm:text-2xl [&>span:first-of-type]:bg-white" />
 
           <div className="flex items-center gap-2">
             <SoundLink href="/mission" className={missionButtonClassName}>
               Our mission
-              <ArrowUpRight className="size-4 stroke-[1.8]" aria-hidden />
+              <ArrowUpRight className="size-3 stroke-[1.8] sm:size-4" aria-hidden />
             </SoundLink>
           </div>
         </div>

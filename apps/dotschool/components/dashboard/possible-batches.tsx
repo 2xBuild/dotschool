@@ -244,8 +244,79 @@ export function PossibleBatches({ items, canVote }: PossibleBatchesProps) {
                 const s = batchListCardStyles(tone);
                 return (
                   <li key={batch.id} className={s.card}>
-                    <div className="relative z-10 flex items-center gap-4">
-                      <div className="min-w-0 flex-1">
+                    <div className="relative z-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                      {/* Mobile */}
+                      <div className="flex flex-col gap-2 sm:hidden">
+                        <div className="flex items-center gap-1">
+                          <BatchCardIconAvatarGroup
+                            iconKeys={batch.cardIconKeys}
+                            s={s}
+                            small
+                          />
+                          <span className={cn("text-xs", s.muted)}>·</span>
+                          <p className={cn("text-xs tabular-nums", s.seatsLabel)}>
+                            {batch.totalSeats} seats
+                          </p>
+                        </div>
+                        <p className={cn("text-balance", s.title)}>
+                          {batch.title}
+                        </p>
+                        <p className={cn(s.muted, "line-clamp-2 text-sm")}>
+                          {buildPossibleBatchTagline(
+                            batch.batchNumber,
+                            batch.description,
+                          )}
+                        </p>
+                      </div>
+                      {(() => {
+                        const st = getState(batch);
+                        return (
+                          <div className="flex items-center justify-end gap-1.5 sm:hidden">
+                            <button
+                              type="button"
+                              disabled={pending || !canVote}
+                              title={
+                                !canVote
+                                  ? "Sign in with a linked account to vote."
+                                  : st.userVote === "up"
+                                    ? "Remove your upvote"
+                                    : "Upvote this possible batch"
+                              }
+                              onClick={() => { playSoftClick(); onVote(batch, "up"); }}
+                              className={cn(
+                                "inline-flex items-center justify-center gap-1 rounded-full border px-2.5 py-0.5 text-[0.65rem] font-semibold disabled:pointer-events-none disabled:opacity-50",
+                                s.voteDefault,
+                              )}
+                            >
+                              <ArrowUp className="size-3 shrink-0" aria-hidden />
+                              <AnimatedCounter value={st.up} />
+                            </button>
+                            <button
+                              type="button"
+                              disabled={pending || !canVote}
+                              title={
+                                !canVote
+                                  ? "Sign in with a linked account to vote."
+                                  : st.userVote === "down"
+                                    ? "Remove your downvote"
+                                    : "Downvote this possible batch"
+                              }
+                              onClick={() => { playSoftClick(); onVote(batch, "down"); }}
+                              className={cn(
+                                "inline-flex items-center justify-center gap-1 rounded-full border px-2.5 py-0.5 text-[0.65rem] font-semibold disabled:pointer-events-none disabled:opacity-50",
+                                s.voteActive,
+                              )}
+                              aria-label="Downvote"
+                            >
+                              <ArrowDown className="size-3 shrink-0" aria-hidden />
+                              <AnimatedCounter value={st.down} />
+                            </button>
+                          </div>
+                        );
+                      })()}
+
+                      {/* Desktop */}
+                      <div className="hidden min-w-0 flex-1 sm:block">
                         <p className={cn("text-balance", s.title)}>
                           {batch.title}
                         </p>
@@ -256,8 +327,7 @@ export function PossibleBatches({ items, canVote }: PossibleBatchesProps) {
                           )}
                         </p>
                       </div>
-
-                      <div className="flex shrink-0 flex-col items-end gap-2">
+                      <div className="hidden shrink-0 flex-col items-end gap-2 sm:flex">
                         <BatchCardIconAvatarGroup
                           iconKeys={batch.cardIconKeys}
                           s={s}
