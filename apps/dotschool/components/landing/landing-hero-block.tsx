@@ -54,7 +54,7 @@ export function LandingHeroBlock() {
                 className="mt-3 max-w-sm text-pretty text-sm leading-5 text-white/80 sm:mt-4 sm:text-md sm:leading-6 sm:max-w-lg"
                 style={{ fontFamily: "var(--font-open-sauce)" }}
               >
-                with cracked peers and mentors. build, compete, chill, climb leaderboard and earn prizes, recognition.
+                with cracked peers and mentors. build, compete, chill, climb leaderboard, earn prizes and recognition.
               </p>
               <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
                 <SoundLink

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import { cn } from "@/lib/utils";
 
 const globalCommunityFlags = [
   { code: "us", name: "United States" },
@@ -13,8 +14,11 @@ const globalCommunityFlags = [
   { code: "mx", name: "Mexico" },
   { code: "gb", name: "United Kingdom" },
   { code: "za", name: "South Africa" },
-  { code: "ph", name: "Philippines" },
 ] as const;
+const globalCommunityOverflow = {
+  label: "+",
+  name: "Other countries",
+} as const;
 
 interface Feature {
   key: string;
@@ -125,10 +129,11 @@ const features: Feature[] = [
           {globalCommunityFlags.map((country, i) => (
             <li
               key={country.code}
-              className={`relative flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white sm:size-8 ${
-                i > 0 ? "-ml-2.5 sm:-ml-3" : ""
-              }`}
-              style={{ zIndex: globalCommunityFlags.length - i }}
+              className={cn(
+                "relative flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white sm:size-8",
+                i > 0 && "-ml-2.5 sm:-ml-3",
+              )}
+              style={{ zIndex: globalCommunityFlags.length + 1 - i }}
               title={country.name}
             >
               <span
@@ -136,6 +141,16 @@ const features: Feature[] = [
               />
             </li>
           ))}
+          <li
+            className={cn(
+              "relative flex size-5 shrink-0 items-center justify-center rounded-full border-2 border-white bg-[#dfe7ff] text-[0.65rem] font-bold leading-none text-[#4a6cf7] sm:size-8 sm:text-sm",
+              "-ml-2.5 sm:-ml-3",
+            )}
+            style={cardFont}
+            title={globalCommunityOverflow.name}
+          >
+            {globalCommunityOverflow.label}
+          </li>
         </ul>
         <p className="text-[0.6rem] uppercase tracking-wide text-[#555] sm:text-sm sm:tracking-widest" style={cardFont}>
           Learn with cracked global peers
