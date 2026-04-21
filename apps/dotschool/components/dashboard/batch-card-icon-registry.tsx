@@ -25,6 +25,11 @@ function pascalToKebab(name: string): string {
     .toLowerCase();
 }
 
+/** Lucide icons are forwardRef objects, SI icons are plain functions. */
+function isComponent(v: unknown): boolean {
+  return typeof v === "function" || (typeof v === "object" && v !== null && typeof (v as { render?: unknown }).render === "function");
+}
+
 /* ------------------------------------------------------------------ */
 /*  Build registry dynamically from icon libraries                     */
 /* ------------------------------------------------------------------ */
@@ -33,7 +38,7 @@ const REGISTRY: Record<string, RegistryEntry> = {};
 
 // All Lucide icons: BookOpen → "lucide-book-open"
 for (const [name, Icon] of Object.entries(lucideIcons)) {
-  if (typeof Icon !== "function" || name[0] !== name[0].toUpperCase()) continue;
+  if (!isComponent(Icon) || name[0] !== name[0].toUpperCase()) continue;
   REGISTRY[`lucide-${pascalToKebab(name)}`] = {
     Icon: Icon as LucideIcon,
     kind: "lucide",
@@ -42,7 +47,7 @@ for (const [name, Icon] of Object.entries(lucideIcons)) {
 
 // All Simple Icons: SiReact → "si-react"
 for (const [name, Icon] of Object.entries(SiIcons)) {
-  if (!name.startsWith("Si") || name.length <= 2 || typeof Icon !== "function")
+  if (!name.startsWith("Si") || name.length <= 2 || !isComponent(Icon))
     continue;
   REGISTRY[`si-${name.slice(2).toLowerCase()}`] = {
     Icon: Icon as ComponentType,

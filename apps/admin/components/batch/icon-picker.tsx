@@ -33,6 +33,11 @@ function pascalToLabel(name: string): string {
     .replace(/([a-zA-Z])(\d)/g, "$1 $2");
 }
 
+/** Lucide icons are forwardRef objects, SI icons are plain functions. */
+function isComponent(v: unknown): boolean {
+  return typeof v === "function" || (typeof v === "object" && v !== null && typeof (v as { render?: unknown }).render === "function");
+}
+
 /** Clean up SI export name into a nice label. */
 function siLabel(exportName: string): string {
   const raw = exportName.slice(2); // strip "Si"
@@ -49,7 +54,7 @@ const CATALOG: CatalogEntry[] = [];
 
 // Simple Icons → "Brand" category
 for (const [name, Icon] of Object.entries(SiIcons)) {
-  if (!name.startsWith("Si") || name.length <= 2 || typeof Icon !== "function")
+  if (!name.startsWith("Si") || name.length <= 2 || !isComponent(Icon))
     continue;
   CATALOG.push({
     key: `si-${name.slice(2).toLowerCase()}`,
@@ -68,7 +73,7 @@ const brandCount = CATALOG.length;
 // Lucide icons → "General" category
 const lucideEntries: CatalogEntry[] = [];
 for (const [name, Icon] of Object.entries(lucideIcons)) {
-  if (typeof Icon !== "function" || name[0] !== name[0].toUpperCase()) continue;
+  if (!isComponent(Icon) || name[0] !== name[0].toUpperCase()) continue;
   lucideEntries.push({
     key: `lucide-${pascalToKebab(name)}`,
     label: pascalToLabel(name),
