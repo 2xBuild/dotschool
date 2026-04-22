@@ -16,7 +16,16 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "dotschool",
-  description: "Education platform for developers and tech professionals.",
+  description: "self-study that actually works",
+  openGraph: {
+    title: "dotschool",
+    description: "self-study that actually works",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "dotschool",
+    description: "self-study that actually works",
+  },
 };
 
 const THEME_INIT_SCRIPT = `
