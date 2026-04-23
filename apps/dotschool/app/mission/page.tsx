@@ -39,9 +39,9 @@ export default function MissionPage() {
 
             <p>Seats are limited for each batch, and we conduct entrance test to choose deserving candidates.</p>
 
-            <p>and cherry on top tech projects can sponsors batches, conduct hackathons and prizes for mutual benefits. and it make the learning more fun and rewarding you know.</p>
+            <p>and cherry on top tech projects can sponsor batches, conduct hackathons and prizes for mutual benefits. and it make the learning more fun and rewarding you know.</p>
 
-            <p>we don't have anyone to teach here, self study is the way to go. but we do have amazing volunteers to run this, share their experience, answer your questions, and collect amazing resources be it articles, yt videos, research paper, docs etc.</p>
+            <p>we don't have any teachers to teach here, self study is the way to go. but we do have amazing volunteers to run this, share their experience, answer your questions, and collect amazing resources be it articles, yt videos, research paper, docs etc.</p>
 
             <p>i believe programming and tech is something, that shouldn't be spoonfed, learning here and there, exploring, building and figuring out yourself teaches you better.</p>
 
