@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { DISCORD_INVITE_URL } from "@/lib/discord";
 import { cn } from "@/lib/utils";
 
 type SiteFooterProps = {
@@ -166,7 +167,7 @@ export function SiteFooter({
               </li>
               <li>
                 <a
-                  href="#"
+                  href={DISCORD_INVITE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={linkClass(brutalist, blue)}
