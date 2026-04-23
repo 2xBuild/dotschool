@@ -28,5 +28,7 @@ export const batches = pgTable("batch", {
   totalSeats: integer("totalSeats").notNull().default(500),
   /** Discord category ID created by /start-batch webhook — null means channels haven't been created yet */
   discordCategoryId: text("discordCategoryId"),
+  /** When the entrance test becomes available to applicants (null = not yet open; past date = open; future date = scheduled) */
+  testOpensAt: timestamp("testOpensAt", { mode: "date" }),
   createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
 });

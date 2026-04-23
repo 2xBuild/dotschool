@@ -26,6 +26,7 @@ type BatchData = {
   batchNumber: number;
   totalSeats: number;
   questionSetId: string | null;
+  testOpensAt: Date | null;
   cardIconKeys: string | null;
   discordCategoryId: string | null;
   roadmap: string | null;

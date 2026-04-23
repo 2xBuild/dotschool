@@ -17,6 +17,7 @@ type BatchData = {
   batchNumber: number;
   totalSeats: number;
   questionSetId: string | null;
+  testOpensAt: Date | null;
   cardIconKeys: string | null;
   roadmap: string | null;
   process: string | null;
@@ -34,6 +35,11 @@ type BatchFormProps = {
 function toDateInputValue(d: Date | null | undefined) {
   if (!d) return "";
   return d.toISOString().split("T")[0];
+}
+
+function toDateTimeInputValue(d: Date | null | undefined) {
+  if (!d) return "";
+  return d.toISOString().slice(0, 16);
 }
 
 export function BatchForm({ batch, suggestedBatchNumber }: BatchFormProps) {
@@ -204,6 +210,21 @@ export function BatchForm({ batch, suggestedBatchNumber }: BatchFormProps) {
             placeholder="e.g. LR-2026-01"
             className={inputCls}
           />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className={labelCls}>Test Opens At</label>
+          <input
+            name="testOpensAt"
+            type="datetime-local"
+            defaultValue={toDateTimeInputValue(batch?.testOpensAt)}
+            className={inputCls}
+          />
+          <p className="mt-1 text-xs text-muted-foreground">
+            Leave blank to keep test closed. Set to a past time to open immediately, or a future time to schedule.
+          </p>
         </div>
       </div>
 

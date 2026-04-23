@@ -13,6 +13,15 @@ import { ThemeToggle } from "@/components/site/theme-toggle";
 import type { BatchModule } from "@/server/batches/modules";
 import type { EnrollmentStatus, TestStatus } from "@/server/batches/detail";
 
+function isTestOpen(testOpensAt: string | null): boolean {
+  if (!testOpensAt) return false;
+  return new Date(testOpensAt) <= new Date();
+}
+
+function formatTestOpensDate(testOpensAt: string): string {
+  return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(new Date(testOpensAt));
+}
+
 const BATCH_DATE_LOCALE = "en-US";
 
 function formatBatchRange(startsAt: Date, endsAt: Date | null) {
@@ -39,6 +48,7 @@ type BatchDetailViewProps = {
   isEnrolled: boolean;
   enrollmentStatus: EnrollmentStatus;
   testStatus: TestStatus;
+  testOpensAt: string | null;
   batchId: string;
   members: RatedMember[];
 };
@@ -98,11 +108,13 @@ export function BatchDetailView({
   isEnrolled,
   enrollmentStatus,
   testStatus,
+  testOpensAt,
   batchId,
   members,
 }: BatchDetailViewProps) {
   const [activeTab, setActiveTab] = useState<BatchNavTab>("home");
   const isApproved = enrollmentStatus === "approved";
+  const testIsOpen = isTestOpen(testOpensAt);
 
   function LockedPanel({ title }: { title: string }) {
     return (
@@ -117,13 +129,17 @@ export function BatchDetailView({
         <p className="mt-1.5 max-w-sm text-sm leading-relaxed text-muted-foreground">
           This section is available to approved batch members only.
         </p>
-        {testStatus !== "submitted" ? (
+        {testStatus !== "submitted" && testIsOpen ? (
           <Link
             href={`/e-test?batch=${batchId}`}
             className="mt-5 inline-flex items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
           >
             Take entrance test
           </Link>
+        ) : testStatus !== "submitted" ? (
+          <p className="mt-5 text-sm text-muted-foreground">
+            {testOpensAt ? `Test opens ${formatTestOpensDate(testOpensAt)}` : "Test date not yet announced"}
+          </p>
         ) : null}
       </section>
     );
@@ -228,13 +244,17 @@ export function BatchDetailView({
               <p className="text-sm font-semibold leading-snug">
                 {testStatus === "submitted"
                   ? "You have already submitted your entrance test"
-                  : "Take the entrance test to apply for this batch"}
+                  : testIsOpen
+                    ? "Take the entrance test to apply for this batch"
+                    : testOpensAt
+                      ? `Test opens ${formatTestOpensDate(testOpensAt)}`
+                      : "Test date not yet announced"}
               </p>
               <p className="mt-0.5 text-sm leading-snug text-white/80">
                 Once approved, full access will be granted.
               </p>
             </div>
-            {testStatus !== "submitted" ? (
+            {testStatus !== "submitted" && testIsOpen ? (
               <Link
                 href={`/e-test?batch=${batchId}`}
                 className="shrink-0 rounded-full bg-white px-4 py-2 text-sm font-semibold text-blue-600 transition-opacity hover:opacity-90"

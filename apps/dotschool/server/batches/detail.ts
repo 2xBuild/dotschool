@@ -78,5 +78,6 @@ export async function getConfirmedBatchWithMemberCount(batchId: string) {
     isEnrolled,
     enrollmentStatus,
     testStatus,
+    testOpensAt: batch.testOpensAt ? batch.testOpensAt.toISOString() : null,
   };
 }

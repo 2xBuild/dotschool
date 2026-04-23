@@ -37,6 +37,7 @@ export async function createBatch(formData: FormData) {
   const totalSeats = Number(formData.get("totalSeats")) || 500;
   const questionSetId =
     (formData.get("questionSetId") as string)?.trim() || null;
+  const testOpensAt = (formData.get("testOpensAt") as string)?.trim() || null;
   const cardIconKeys =
     (formData.get("cardIconKeys") as string)?.trim() || null;
 
@@ -63,6 +64,7 @@ export async function createBatch(formData: FormData) {
       batchNumber,
       totalSeats,
       questionSetId,
+      testOpensAt: testOpensAt ? new Date(testOpensAt) : null,
       cardIconKeys: cardIconKeys === "[]" ? null : cardIconKeys,
     })
     .returning({ id: batches.id });
@@ -84,6 +86,7 @@ export async function updateBatch(batchId: string, formData: FormData) {
   const totalSeats = Number(formData.get("totalSeats")) || 500;
   const questionSetId =
     (formData.get("questionSetId") as string)?.trim() || null;
+  const testOpensAt = (formData.get("testOpensAt") as string)?.trim() || null;
   const cardIconKeys =
     (formData.get("cardIconKeys") as string)?.trim() || null;
   const roadmap = (formData.get("roadmap") as string)?.trim() || null;
@@ -119,6 +122,7 @@ export async function updateBatch(batchId: string, formData: FormData) {
       batchNumber,
       totalSeats,
       questionSetId,
+      testOpensAt: testOpensAt ? new Date(testOpensAt) : null,
       cardIconKeys: cardIconKeys === "[]" ? null : cardIconKeys,
       roadmap,
       process,

@@ -48,6 +48,7 @@ function toBatchTabItem(row: {
   enrolledAt?: Date;
   status?: string;
   questionSetId?: string | null;
+  testOpensAt?: Date | null;
   cardIconKeys: string | null;
   batchNumber: number;
   totalSeats: number;
@@ -71,6 +72,7 @@ function toBatchTabItem(row: {
     enrolledAt: row.enrolledAt?.toISOString(),
     status: row.status,
     questionSetId: resolveEntranceQuestionSetId(row.questionSetId),
+    testOpensAt: row.testOpensAt ? row.testOpensAt.toISOString() : null,
     batchNumber: row.batchNumber,
     totalSeats: row.totalSeats,
     participantCount: row.participantCount,
@@ -115,6 +117,7 @@ export async function getDashboardData(userId: string) {
     enrolledAt: Date;
     status: string;
     questionSetId: string | null;
+    testOpensAt: Date | null;
     cardIconKeys: string | null;
     batchNumber: number;
     totalSeats: number;
@@ -165,6 +168,7 @@ export async function getDashboardData(userId: string) {
         enrolledAt: batchEnrollments.enrolledAt,
         status: batchEnrollments.status,
         questionSetId: batches.questionSetId,
+        testOpensAt: batches.testOpensAt,
         cardIconKeys: batches.cardIconKeys,
         batchNumber: batches.batchNumber,
         totalSeats: batches.totalSeats,

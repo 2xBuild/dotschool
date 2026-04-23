@@ -29,9 +29,20 @@ export type BatchTabItem = {
   enrolledAt?: string;
   status?: string;
   questionSetId?: string | null;
+  testOpensAt?: string | null;
   details?: BatchProgramDetails | null;
   testStatus?: string | null;
 };
+
+function isTestOpen(testOpensAt: string | null | undefined): boolean {
+  if (!testOpensAt) return false;
+  return new Date(testOpensAt) <= new Date();
+}
+
+function testOpensLabel(testOpensAt: string | null | undefined): string {
+  if (!testOpensAt) return "Test TBA";
+  return `Opens ${new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(new Date(testOpensAt))}`;
+}
 
 type BatchTabsProps = {
   upcoming: BatchTabItem[];
@@ -285,7 +296,8 @@ export function BatchTabs({
                     {batches.map((batch, i) => {
                       const tone = batchListCardToneAt(startIndex + i);
                       const s = batchListCardStyles(tone);
-                      const hasTest = showTestBtn && !!batch.questionSetId;
+                      const hasQuestionSet = showTestBtn && !!batch.questionSetId;
+                      const testOpen = hasQuestionSet && isTestOpen(batch.testOpensAt);
                       return (
                         <li key={batch.id} className={s.card}>
                           <div className="relative z-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
@@ -314,32 +326,43 @@ export function BatchTabs({
                                 href={`/batches/${batch.id}`}
                                 className={cn(
                                   "inline-flex min-w-[4rem] items-center justify-center rounded-full border px-2.5 py-0.5 text-[0.65rem] font-medium",
-                                  hasTest ? s.secondaryBtn : s.primaryBtn,
+                                  hasQuestionSet ? s.secondaryBtn : s.primaryBtn,
                                 )}
                               >
                                 More
                               </Link>
-                              {hasTest ? (
-                                batch.testStatus === "submitted" ? (
+                              {hasQuestionSet ? (
+                                testOpen ? (
+                                  batch.testStatus === "submitted" ? (
+                                    <span
+                                      className={cn(
+                                        "inline-flex min-w-[4rem] items-center justify-center rounded-full border px-2.5 py-0.5 text-[0.65rem] font-medium opacity-60 cursor-default",
+                                        s.secondaryBtn,
+                                      )}
+                                      title="Your test has been recorded. After the cutoff is announced, you can be part of this batch."
+                                    >
+                                      Submitted
+                                    </span>
+                                  ) : (
+                                    <Link
+                                      href={`/e-test?batch=${batch.id}`}
+                                      className={cn(
+                                        "inline-flex min-w-[4rem] items-center justify-center rounded-full border px-2.5 py-0.5 text-[0.65rem] font-medium",
+                                        s.primaryBtn,
+                                      )}
+                                    >
+                                      Take test
+                                    </Link>
+                                  )
+                                ) : (
                                   <span
                                     className={cn(
                                       "inline-flex min-w-[4rem] items-center justify-center rounded-full border px-2.5 py-0.5 text-[0.65rem] font-medium opacity-60 cursor-default",
                                       s.secondaryBtn,
                                     )}
-                                    title="Your test has been recorded. After the cutoff is announced, you can be part of this batch."
                                   >
-                                    Submitted
+                                    {testOpensLabel(batch.testOpensAt)}
                                   </span>
-                                ) : (
-                                  <Link
-                                    href={`/e-test?batch=${batch.id}`}
-                                    className={cn(
-                                      "inline-flex min-w-[4rem] items-center justify-center rounded-full border px-2.5 py-0.5 text-[0.65rem] font-medium",
-                                      s.primaryBtn,
-                                    )}
-                                  >
-                                    Take test
-                                  </Link>
                                 )
                               ) : null}
                             </div>
@@ -368,32 +391,43 @@ export function BatchTabs({
                                   href={`/batches/${batch.id}`}
                                   className={cn(
                                     "inline-flex min-w-[4.5rem] items-center justify-center rounded-full border px-3 py-1 text-xs font-medium",
-                                    hasTest ? s.secondaryBtn : s.primaryBtn,
+                                    hasQuestionSet ? s.secondaryBtn : s.primaryBtn,
                                   )}
                                 >
                                   More
                                 </Link>
-                                {hasTest ? (
-                                  batch.testStatus === "submitted" ? (
+                                {hasQuestionSet ? (
+                                  testOpen ? (
+                                    batch.testStatus === "submitted" ? (
+                                      <span
+                                        className={cn(
+                                          "inline-flex min-w-[4.5rem] items-center justify-center rounded-full border px-3 py-1 text-xs font-medium opacity-60 cursor-default",
+                                          s.secondaryBtn,
+                                        )}
+                                        title="Your test has been recorded. After the cutoff is announced, you can be part of this batch."
+                                      >
+                                        Submitted
+                                      </span>
+                                    ) : (
+                                      <Link
+                                        href={`/e-test?batch=${batch.id}`}
+                                        className={cn(
+                                          "inline-flex min-w-[4.5rem] items-center justify-center rounded-full border px-3 py-1 text-xs font-medium",
+                                          s.primaryBtn,
+                                        )}
+                                      >
+                                        Take test
+                                      </Link>
+                                    )
+                                  ) : (
                                     <span
                                       className={cn(
                                         "inline-flex min-w-[4.5rem] items-center justify-center rounded-full border px-3 py-1 text-xs font-medium opacity-60 cursor-default",
                                         s.secondaryBtn,
                                       )}
-                                      title="Your test has been recorded. After the cutoff is announced, you can be part of this batch."
                                     >
-                                      Submitted
+                                      {testOpensLabel(batch.testOpensAt)}
                                     </span>
-                                  ) : (
-                                    <Link
-                                      href={`/e-test?batch=${batch.id}`}
-                                      className={cn(
-                                        "inline-flex min-w-[4.5rem] items-center justify-center rounded-full border px-3 py-1 text-xs font-medium",
-                                        s.primaryBtn,
-                                      )}
-                                    >
-                                      Take test
-                                    </Link>
                                   )
                                 ) : null}
                               </div>
