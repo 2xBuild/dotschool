@@ -1,7 +1,7 @@
 {
   "name": "dot-discord-bot",
   "version": "1.0.0",
-  "description": "A Discord bot for dot.school with announcements, concerns/voting, user tags, and verification.",
+  "description": "A Discord bot for dotschool with announcements, concerns/voting, user tags, and verification.",
   "main": "src/index.ts",
   "scripts": {
     "dev": "tsx watch src/index.ts",

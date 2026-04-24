@@ -274,7 +274,7 @@ function handleRedirect(req: http.IncomingMessage, res: http.ServerResponse) {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>dot.school Bot — Added</title>
+  <title>dotschool bot — Added</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f0f10; color: #e4e4e7; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
@@ -300,7 +300,7 @@ function handleRedirect(req: http.IncomingMessage, res: http.ServerResponse) {
     </div>
     <h1>Bot added successfully</h1>
     ${guildId ? `<div class="guild">${guildName}</div>` : ''}
-    <p>The dot.school bot is now in your server. Here's what to do next:</p>
+    <p>The dotschool bot is now in your server. Here's what to do next:</p>
     <ol class="steps">
       <li>Make sure the bot role is <strong>above</strong> other roles it needs to manage</li>
       <li>Run <strong>/verify</strong> to register yourself</li>
