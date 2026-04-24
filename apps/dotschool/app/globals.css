@@ -177,6 +177,8 @@
   }
   body {
     @apply bg-background text-foreground;
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
   }
   html {
     @apply font-sans;

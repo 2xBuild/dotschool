@@ -32,7 +32,7 @@ export function SiteFooter({
   return (
     <footer
       className={cn(
-        "mt-auto border-t",
+        "mt-auto border-t [backface-visibility:hidden]",
         brutalist
           ? "border-t-2 border-brutal-navy bg-brutal-surface"
           : cn(

@@ -39,9 +39,15 @@ function isTestOpen(testOpensAt: string | null | undefined): boolean {
   return new Date(testOpensAt) <= new Date();
 }
 
-function testOpensLabel(testOpensAt: string | null | undefined): string {
-  if (!testOpensAt) return "Test TBA";
-  return `Opens ${new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(new Date(testOpensAt))}`;
+function testStatusInfo(testOpensAt: string | null | undefined): { label: string; tooltip: string } {
+  if (!testOpensAt) return { label: "Test TBA", tooltip: "Test date not yet announced" };
+  const target = new Date(testOpensAt);
+  const now = new Date();
+  const dateStr = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(target);
+  if (target <= now) return { label: "Test open", tooltip: `Opened ${dateStr}` };
+  const days = Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  if (days === 1) return { label: "Test in 1 day", tooltip: `Opens ${dateStr}` };
+  return { label: `Test in ${days} days`, tooltip: `Opens ${dateStr}` };
 }
 
 type BatchTabsProps = {
@@ -360,8 +366,9 @@ export function BatchTabs({
                                       "inline-flex min-w-[4rem] items-center justify-center rounded-full border px-2.5 py-0.5 text-[0.65rem] font-medium opacity-60 cursor-default",
                                       s.secondaryBtn,
                                     )}
+                                    title={testStatusInfo(batch.testOpensAt).tooltip}
                                   >
-                                    {testOpensLabel(batch.testOpensAt)}
+                                    {testStatusInfo(batch.testOpensAt).label}
                                   </span>
                                 )
                               ) : null}
@@ -425,8 +432,9 @@ export function BatchTabs({
                                         "inline-flex min-w-[4.5rem] items-center justify-center rounded-full border px-3 py-1 text-xs font-medium opacity-60 cursor-default",
                                         s.secondaryBtn,
                                       )}
+                                      title={testStatusInfo(batch.testOpensAt).tooltip}
                                     >
-                                      {testOpensLabel(batch.testOpensAt)}
+                                      {testStatusInfo(batch.testOpensAt).label}
                                     </span>
                                   )
                                 ) : null}
