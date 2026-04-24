@@ -29,7 +29,7 @@ export default async function BatchDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const { batch, memberCount, isEnrolled, enrollmentStatus, testStatus, testOpensAt } = data;
+  const { batch, memberCount, isEnrolled, enrollmentStatus } = data;
   const [volunteersRaw, modules, { peers, currentUserId }] = await Promise.all([
     getBatchVolunteers(batch.id),
     getBatchModules(batch.id),
@@ -65,8 +65,6 @@ export default async function BatchDetailPage({ params }: PageProps) {
       modules={modules}
       isEnrolled={isEnrolled}
       enrollmentStatus={enrollmentStatus}
-      testStatus={testStatus}
-      testOpensAt={testOpensAt}
       batchId={batch.id}
       members={members}
     />
