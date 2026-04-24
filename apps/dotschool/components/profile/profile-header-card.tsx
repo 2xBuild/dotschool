@@ -73,6 +73,9 @@ type SocialRowProps = {
   inputName: string;
   linkHref?: string | null;
   linkLabel?: string;
+  onEditClick?: () => void;
+  onCancelEdit?: () => void;
+  isInlineEditing?: boolean;
 };
 
 function SocialRow({
@@ -84,16 +87,32 @@ function SocialRow({
   inputName,
   linkHref,
   linkLabel = "Open",
+  onEditClick,
+  onCancelEdit,
+  isInlineEditing,
 }: SocialRowProps) {
+  const showInput = isEditing || isInlineEditing;
+
   return (
-    <div className="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex items-center justify-between gap-3 px-6 py-4">
       <div className="flex min-w-0 items-center gap-3">
         <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-muted text-foreground">
           {icon}
         </div>
         <div className="min-w-0">
-          <p className="text-sm font-medium text-foreground">{label}</p>
-          {isEditing ? (
+          <div className="flex items-center gap-1.5">
+            <p className="text-sm font-medium text-foreground">{label}</p>
+            {!isEditing && !isInlineEditing && onEditClick ? (
+              <button
+                type="button"
+                onClick={onEditClick}
+                className="inline-flex size-6 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <PencilLine className="size-3" />
+              </button>
+            ) : null}
+          </div>
+          {showInput ? (
             <div className="mt-2 flex items-center gap-2 rounded-2xl border border-border bg-background px-3 py-2 shadow-sm sm:min-w-64">
               <span className="text-sm font-medium text-muted-foreground">@</span>
               <input
@@ -120,12 +139,19 @@ function SocialRow({
         </div>
       </div>
 
-      {!isEditing && linkHref ? (
+      {isInlineEditing ? (
+        <div className="flex shrink-0 items-center gap-2">
+          <Button type="button" variant="ghost" size="sm" onClick={onCancelEdit} className="h-8 rounded-full px-3 text-xs">
+            Cancel
+          </Button>
+          <SubmitStatusButton idleLabel="Save" className="h-8 rounded-full px-3 text-xs" />
+        </div>
+      ) : !isEditing && linkHref ? (
         <a
           href={linkHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 self-start text-sm font-medium text-primary hover:underline sm:self-center"
+          className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-primary hover:underline"
         >
           {linkLabel}
           <ArrowUpRight className="size-3.5" />
@@ -157,9 +183,15 @@ export function ProfileHeaderCard({
   const supportLabel = socials?.support?.label ?? "";
   const supportUrl = socials?.support?.url ?? "";
   const twitterUsername = socials?.twitter?.username ?? "";
+  const [editingSocial, setEditingSocial] = useState<"discord" | "twitter" | null>(null);
+
+  const handleInlineSubmit = async (formData: FormData) => {
+    await updateProfileAction(formData);
+    setEditingSocial(null);
+  };
 
   return (
-    <form action={updateProfileAction} className="space-y-6">
+    <form action={editingSocial ? handleInlineSubmit : updateProfileAction} className="space-y-6">
       <Card className="rounded-4xl border border-border bg-card py-0 shadow-sm">
         <CardHeader className="border-b border-border px-6 py-6 sm:px-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -189,7 +221,7 @@ export function ProfileHeaderCard({
                 type="button"
                 variant="outline"
                 size="lg"
-                onClick={() => { playClick(); setIsEditing(true); }}
+                onClick={() => { playClick(); setEditingSocial(null); setIsEditing(true); }}
                 className="h-11 rounded-full px-5"
               >
                 <PencilLine className="size-4" />
@@ -336,6 +368,9 @@ export function ProfileHeaderCard({
               inputName="discordUsername"
               linkHref={DISCORD_INVITE_URL}
               linkLabel="Join"
+              isInlineEditing={!isEditing && editingSocial === "discord"}
+              onEditClick={() => setEditingSocial("discord")}
+              onCancelEdit={() => setEditingSocial(null)}
             />
 
             <SocialRow
@@ -346,6 +381,9 @@ export function ProfileHeaderCard({
               isEditing={isEditing}
               inputName="twitterUsername"
               linkHref={twitterUsername ? `https://x.com/${twitterUsername}` : null}
+              isInlineEditing={!isEditing && editingSocial === "twitter"}
+              onEditClick={() => setEditingSocial("twitter")}
+              onCancelEdit={() => setEditingSocial(null)}
             />
 
             {canManageSupport ? (
@@ -411,6 +449,25 @@ export function ProfileHeaderCard({
         </CardContent>
       </Card>
 
+      {editingSocial && !isEditing && (
+        <>
+          <input type="hidden" name="name" value={displayName} />
+          <input type="hidden" name="username" value={username ?? ""} />
+          <input type="hidden" name="about" value={about ?? ""} />
+          {editingSocial !== "discord" && (
+            <input type="hidden" name="discordUsername" value={discordUsername} />
+          )}
+          {editingSocial !== "twitter" && (
+            <input type="hidden" name="twitterUsername" value={twitterUsername} />
+          )}
+          {canManageSupport && (
+            <>
+              <input type="hidden" name="supportUrl" value={supportUrl} />
+              <input type="hidden" name="supportLabel" value={supportLabel} />
+            </>
+          )}
+        </>
+      )}
     </form>
   );
 }
