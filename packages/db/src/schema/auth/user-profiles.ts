@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 
 import { users } from "./users";
 
@@ -30,6 +30,7 @@ export const userProfiles = pgTable("user_profile", {
     .notNull()
     .default(sql`'{}'::jsonb`),
   image: text("image"),
+  showInDirectory: boolean("showInDirectory").notNull().default(true),
   provider: text("provider"),
   createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
   updatedAt: timestamp("updatedAt", { mode: "date" }).notNull().defaultNow(),
