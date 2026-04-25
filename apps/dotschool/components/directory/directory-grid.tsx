@@ -26,7 +26,7 @@ import React, { useState, useCallback, useEffect } from "react";
 
 import { cn } from "@/lib/utils";
 import {
-  useBackSound,
+  useClickSound,
   useSoftClickSound,
   useTabSwitchSound,
 } from "@/hooks/use-app-sound";
@@ -432,12 +432,12 @@ export function DirectoryGrid({ people }: { people: DirectoryPerson[] }) {
   const [selectedPerson, setSelectedPerson] = useState<DirectoryPerson | null>(null);
   const [playTabSwitch] = useTabSwitchSound();
   const [playExpand] = useSoftClickSound();
-  const [playBack] = useBackSound();
+  const [playLogout] = useClickSound();
 
   const onClose = useCallback(() => {
-    playBack();
+    playLogout();
     setSelectedPerson(null);
-  }, [playBack]);
+  }, [playLogout]);
 
   const onDismiss = useCallback(() => {
     setSelectedPerson(null);
