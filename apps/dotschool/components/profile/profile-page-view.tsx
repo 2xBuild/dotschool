@@ -5,40 +5,14 @@ import { LogoutButton } from "@/components/profile/logout-button";
 import { ProfileHeaderCard } from "@/components/profile/profile-header-card";
 import { SiteFooter } from "@/components/site/site-footer";
 import { ThemeToggle } from "@/components/site/theme-toggle";
-
-type ProfileData = {
-  userId: string;
-  email: string;
-  name: string | null;
-  username: string | null;
-  about: string | null;
-  socials: {
-    discord?: {
-      username?: string | null;
-      userId?: string | null;
-    } | null;
-    support?: {
-      label?: string | null;
-      url?: string | null;
-    } | null;
-    twitter?: {
-      username?: string | null;
-    } | null;
-  };
-  image: string | null;
-  showInDirectory: boolean;
-  provider: string | null;
-  createdAt: Date | null;
-  updatedAt: Date | null;
-  lastLoginAt: Date | null;
-};
+import type { ProfilePageProfile } from "@/server/profile/queries";
 
 type ProfilePageViewProps = {
   displayName: string;
   email: string | null;
   avatarUrl: string | null;
   canManageSupport: boolean;
-  profile: ProfileData | null;
+  profile: ProfilePageProfile | null;
   usernameInputPattern: string;
   updateProfileAction: (formData: FormData) => Promise<void>;
   updateDirectoryPreferenceAction: (showInDirectory: boolean) => Promise<boolean>;
