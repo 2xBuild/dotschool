@@ -8,12 +8,29 @@ import { db } from "@/server/db";
 import type { UserProfileSocials } from "@/server/db/schema";
 import { botMemberTags, botMembers, userProfiles, users } from "@/server/db/schema";
 import { canUserManageProfileSupport } from "@/server/profile/support-access";
-import { isValidUsername, normalizeUsername } from "@/server/profile/username";
+import {
+  buildDefaultUsername,
+  DEFAULT_USERNAME_MAX_ATTEMPTS,
+  isValidUsername,
+  normalizeUsername,
+} from "@/server/profile/username";
 
 const MAX_PROFILE_NAME_LENGTH = 80;
 const MAX_ABOUT_LENGTH = 300;
 const MAX_SUPPORT_LABEL_LENGTH = 40;
 const SOCIAL_HANDLE_PATTERN = /^[a-z0-9._]{2,32}$/;
+
+function isUniqueViolation(error: unknown): error is {
+  code: string;
+  constraint_name?: string;
+} {
+  return Boolean(
+    error &&
+    typeof error === "object" &&
+    "code" in error &&
+    (error as { code?: string }).code === "23505",
+  );
+}
 
 function normalizeSocialHandle(value: string) {
   return value.trim().replace(/^@+/, "").toLowerCase();
@@ -308,26 +325,52 @@ export async function updateDiscordUsername(formData: FormData) {
       .set({ socials, updatedAt: now })
       .where(eq(userProfiles.userId, userRecord.id));
   } else {
-    // New profile: fall back to a derived username so we satisfy NOT NULL.
-    const fallbackUsername = normalizeUsername(email.split("@")[0] ?? "");
-    if (!isValidUsername(fallbackUsername)) {
-      return;
+    let ensuredProfile = false;
+
+    for (let attempt = 0; attempt < DEFAULT_USERNAME_MAX_ATTEMPTS; attempt += 1) {
+      const fallbackUsername = buildDefaultUsername(userRecord.name);
+
+      try {
+        await db.insert(userProfiles).values({
+          userId: userRecord.id,
+          email,
+          name: userRecord.name ?? null,
+          username: fallbackUsername,
+          socials,
+          updatedAt: now,
+        });
+        ensuredProfile = true;
+        break;
+      } catch (error) {
+        if (!isUniqueViolation(error)) {
+          throw error;
+        }
+
+        const concurrentProfile = await db.query.userProfiles.findFirst({
+          where: eq(userProfiles.userId, userRecord.id),
+          columns: { userId: true },
+        });
+
+        if (concurrentProfile) {
+          await db
+            .update(userProfiles)
+            .set({ socials, updatedAt: now })
+            .where(eq(userProfiles.userId, userRecord.id));
+          ensuredProfile = true;
+          break;
+        }
+
+        if (error.constraint_name === "user_profile_username_unique") {
+          continue;
+        }
+
+        throw error;
+      }
     }
-    const duplicateUsername = await db.query.userProfiles.findFirst({
-      where: eq(userProfiles.username, fallbackUsername),
-      columns: { userId: true },
-    });
-    if (duplicateUsername) {
-      return;
+
+    if (!ensuredProfile) {
+      throw new Error("Unable to generate a unique default username.");
     }
-    await db.insert(userProfiles).values({
-      userId: userRecord.id,
-      email,
-      name: userRecord.name ?? null,
-      username: fallbackUsername,
-      socials,
-      updatedAt: now,
-    });
   }
 
   // Transfer bot member tags if the Discord handle changed.

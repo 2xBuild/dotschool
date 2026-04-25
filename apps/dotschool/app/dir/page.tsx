@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Logo } from "@/components/brand/logo";
+import { DirectoryCountTooltip } from "@/components/directory/directory-count-tooltip";
 import { DirectoryGrid } from "@/components/directory/directory-grid";
 import { SiteFooter } from "@/components/site/site-footer";
 import { ThemeToggle } from "@/components/site/theme-toggle";
@@ -42,9 +43,12 @@ export default async function DirectoryPage() {
             <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
               Everyone who is part of dotschool. Learners, volunteers, and mentors. all in one place.
             </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {people.length} {people.length === 1 ? "person" : "people"}
-            </p>
+            <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground tabular-nums">
+              <span>
+                {people.length} {people.length === 1 ? "person" : "people"}
+              </span>
+              <DirectoryCountTooltip />
+            </div>
           </div>
 
           <DirectoryGrid people={people} />

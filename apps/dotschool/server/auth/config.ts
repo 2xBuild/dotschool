@@ -10,13 +10,28 @@ import {
   users,
   verificationTokens,
 } from "@/server/db/schema";
-import { buildDefaultUsername } from "@/server/profile/username";
+import {
+  buildDefaultUsername,
+  DEFAULT_USERNAME_MAX_ATTEMPTS,
+} from "@/server/profile/username";
 
 const providerLabels: Record<string, string> = {
   google: "Google",
   github: "GitHub",
   discord: "Discord",
 };
+
+function isUniqueViolation(error: unknown): error is {
+  code: string;
+  constraint_name?: string;
+} {
+  return Boolean(
+    error &&
+    typeof error === "object" &&
+    "code" in error &&
+    (error as { code?: string }).code === "23505",
+  );
+}
 
 const baseConfig = createBaseAuthConfig(db, {
   usersTable: users,
@@ -106,31 +121,75 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       const name = user.name?.trim() || null;
       const image = user.image ?? null;
       const provider = account?.provider ?? null;
-      const username = buildDefaultUsername(email, userId);
+      const existingProfile = await db.query.userProfiles.findFirst({
+        where: eq(userProfiles.userId, userId),
+        columns: { userId: true },
+      });
 
-      await db
-        .insert(userProfiles)
-        .values({
-          userId,
-          email,
-          name,
-          username,
-          image,
-          provider,
-          updatedAt: now,
-          lastLoginAt: now,
-        })
-        .onConflictDoUpdate({
-          target: userProfiles.userId,
-          set: {
+      if (existingProfile) {
+        await db
+          .update(userProfiles)
+          .set({
             email,
             name,
             image,
             provider,
             updatedAt: now,
             lastLoginAt: now,
-          },
-        });
+          })
+          .where(eq(userProfiles.userId, userId));
+        return;
+      }
+
+      for (let attempt = 0; attempt < DEFAULT_USERNAME_MAX_ATTEMPTS; attempt += 1) {
+        const username = buildDefaultUsername(name);
+
+        try {
+          await db.insert(userProfiles).values({
+            userId,
+            email,
+            name,
+            username,
+            image,
+            provider,
+            updatedAt: now,
+            lastLoginAt: now,
+          });
+          return;
+        } catch (error) {
+          if (!isUniqueViolation(error)) {
+            throw error;
+          }
+
+          const concurrentProfile = await db.query.userProfiles.findFirst({
+            where: eq(userProfiles.userId, userId),
+            columns: { userId: true },
+          });
+
+          if (concurrentProfile) {
+            await db
+              .update(userProfiles)
+              .set({
+                email,
+                name,
+                image,
+                provider,
+                updatedAt: now,
+                lastLoginAt: now,
+              })
+              .where(eq(userProfiles.userId, userId));
+            return;
+          }
+
+          if (error.constraint_name === "user_profile_username_unique") {
+            continue;
+          }
+
+          throw error;
+        }
+      }
+
+      throw new Error("Unable to generate a unique default username.");
     },
   },
 });

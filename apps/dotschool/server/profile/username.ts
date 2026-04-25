@@ -1,5 +1,6 @@
 const USERNAME_MIN_LENGTH = 4;
 const USERNAME_MAX_LENGTH = 32;
+export const DEFAULT_USERNAME_MAX_ATTEMPTS = 20;
 
 // 4-32 chars; letters, numbers, underscore, and dot only.
 export const USERNAME_PATTERN = new RegExp(
@@ -33,18 +34,24 @@ function ensureStartsWithLetter(value: string) {
   return `u${value}`;
 }
 
-export function buildDefaultUsername(email: string, userId: string) {
-  const localPart = email.split("@")[0] ?? "";
-  const localToken = stripToAlphaNumeric(localPart);
-  const userToken = stripToAlphaNumeric(userId);
+function pickFirstNameToken(name: string) {
+  return name.trim().split(/\s+/)[0] ?? "";
+}
 
-  const base = ensureStartsWithLetter(localToken || userToken.slice(0, 12));
-  const suffix = userToken.slice(0, 8) || "acct00";
-  const candidate = `${base.slice(0, USERNAME_MAX_LENGTH - 1 - suffix.length)}.${suffix}`;
+function buildRandomNumericSuffix() {
+  return String(Math.floor(1000 + Math.random() * 9000));
+}
+
+export function buildDefaultUsername(name: string | null | undefined) {
+  const firstName = pickFirstNameToken(name ?? "");
+  const nameToken = stripToAlphaNumeric(firstName);
+  const base = ensureStartsWithLetter(nameToken || "user");
+  const suffix = buildRandomNumericSuffix();
+  const candidate = `${base.slice(0, USERNAME_MAX_LENGTH - suffix.length)}${suffix}`;
 
   if (candidate.length >= USERNAME_MIN_LENGTH && isValidUsername(candidate)) {
     return candidate;
   }
 
-  return `user.${suffix}`;
+  return `user${suffix}`;
 }
