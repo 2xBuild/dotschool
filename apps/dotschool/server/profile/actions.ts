@@ -337,6 +337,7 @@ export async function updateDiscordUsername(formData: FormData) {
           name: userRecord.name ?? null,
           username: fallbackUsername,
           socials,
+          showInDirectory: true,
           updatedAt: now,
         });
         ensuredProfile = true;

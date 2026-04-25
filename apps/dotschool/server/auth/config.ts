@@ -151,6 +151,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             name,
             username,
             image,
+            showInDirectory: true,
             provider,
             updatedAt: now,
             lastLoginAt: now,
