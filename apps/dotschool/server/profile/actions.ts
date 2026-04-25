@@ -59,6 +59,7 @@ export async function updateProfile(formData: FormData) {
   const aboutInput = formData.get("about");
   const discordInput = formData.get("discordUsername");
   const twitterInput = formData.get("twitterUsername");
+  const showInDirectoryInput = formData.get("showInDirectory");
   const supportUrlInput = formData.get("supportUrl");
   const supportLabelInput = formData.get("supportLabel");
 
@@ -71,6 +72,7 @@ export async function updateProfile(formData: FormData) {
   const twitterUsername = normalizeSocialHandle(
     typeof twitterInput === "string" ? twitterInput : "",
   );
+  const showInDirectory = showInDirectoryInput === "on";
   const rawSupportUrl = typeof supportUrlInput === "string" ? supportUrlInput : "";
   const rawSupportLabel = typeof supportLabelInput === "string" ? supportLabelInput : "";
 
@@ -165,6 +167,7 @@ export async function updateProfile(formData: FormData) {
       username,
       about: about || null,
       socials,
+      showInDirectory,
       updatedAt: now,
     })
     .onConflictDoUpdate({
@@ -175,6 +178,7 @@ export async function updateProfile(formData: FormData) {
         username,
         about: about || null,
         socials,
+        showInDirectory,
         updatedAt: now,
       },
     });
@@ -223,6 +227,29 @@ export async function updateProfile(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/profile");
+}
+
+export async function updateDirectoryPreference(showInDirectory: boolean) {
+  const session = await auth();
+  const userId = session?.user?.id?.trim();
+
+  if (!userId) {
+    return false;
+  }
+
+  await db
+    .update(userProfiles)
+    .set({
+      showInDirectory,
+      updatedAt: new Date(),
+    })
+    .where(eq(userProfiles.userId, userId));
+
+  revalidatePath("/profile");
+  revalidatePath("/dir");
+  revalidatePath("/directory");
+
+  return true;
 }
 
 export async function updateDiscordUsername(formData: FormData) {

@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { ArrowUpRight, Plus } from "lucide-react";
+import { ArrowUpRight, Plus, Users } from "lucide-react";
 
 import { Logo } from "@/components/brand/logo";
 import { SoundLink } from "@/components/landing/sound-link";
@@ -10,6 +9,9 @@ const navButtonSize = "inline-flex h-6 items-center justify-center gap-1 rounded
 
 const missionButtonClassName =
   `${navButtonSize} border border-white/28 bg-white/10 text-white shadow-none transition-colors duration-200 hover:bg-white hover:text-[#1f49ff]`;
+
+const directoryButtonClassName =
+  "inline-flex size-6 items-center justify-center rounded-full border border-white/28 bg-white/10 text-white shadow-none transition-colors duration-200 hover:bg-white hover:text-[#1f49ff] sm:size-9";
 
 const joinButtonClassName =
   `${navButtonSize} border border-white bg-white text-[#1f49ff] shadow-none transition-colors duration-200 hover:bg-white/90`;
@@ -28,6 +30,13 @@ export function LandingHeroBlock() {
           <Logo className="text-base text-white sm:text-2xl [&>span:first-of-type]:bg-white" />
 
           <div className="flex items-center gap-2">
+            <SoundLink
+              href="/dir"
+              className={directoryButtonClassName}
+              aria-label="Directory"
+            >
+              <Users className="size-3 stroke-[1.8] sm:size-4" aria-hidden />
+            </SoundLink>
             <SoundLink href="/mission" className={missionButtonClassName}>
               Our mission
               <ArrowUpRight className="size-3 stroke-[1.8] sm:size-4" aria-hidden />

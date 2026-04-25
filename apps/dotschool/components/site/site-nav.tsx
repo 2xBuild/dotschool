@@ -8,6 +8,7 @@ import { ThemeToggle } from "@/components/site/theme-toggle";
 
 const links = [
   { href: "/mission", label: "Mission" },
+  { href: "/dir", label: "Directory" },
   { href: "/fund", label: "Fund" },
 ] as const;
 

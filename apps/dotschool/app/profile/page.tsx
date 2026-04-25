@@ -2,7 +2,10 @@ import { redirect } from "next/navigation";
 
 import { ProfilePageView } from "@/components/profile/profile-page-view";
 import { auth } from "@/server/auth/config";
-import { updateProfile } from "@/server/profile/actions";
+import {
+  updateDirectoryPreference,
+  updateProfile,
+} from "@/server/profile/actions";
 import { USERNAME_INPUT_PATTERN } from "@/server/profile/username";
 import { getProfilePageData } from "@/server/profile/queries";
 
@@ -28,6 +31,7 @@ export default async function ProfilePage() {
       profile={profile}
       usernameInputPattern={USERNAME_INPUT_PATTERN}
       updateProfileAction={updateProfile}
+      updateDirectoryPreferenceAction={updateDirectoryPreference}
     />
   );
 }

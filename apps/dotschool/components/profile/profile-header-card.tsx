@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { ArrowUpRight, BadgeCheck, PencilLine } from "lucide-react";
 import { SiDiscord, SiX } from "react-icons/si";
 
@@ -10,7 +10,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/card";
 import { SubmitStatusButton } from "@/components/ui/status-button";
 import { DISCORD_INVITE_URL } from "@/lib/discord";
 import { cn } from "@/lib/utils";
-import { useClickSound, useSoftClickSound } from "@/hooks/use-app-sound";
+import {
+  useClickSound,
+  useSoftClickSound,
+  useToggleSound,
+} from "@/hooks/use-app-sound";
 
 type Socials = {
   discord?: {
@@ -35,8 +39,10 @@ type ProfileHeaderCardProps = {
   about: string | null;
   provider: string | null;
   socials: Socials | null;
+  showInDirectory: boolean;
   usernameInputPattern: string;
   updateProfileAction: (formData: FormData) => Promise<void>;
+  updateDirectoryPreferenceAction: (showInDirectory: boolean) => Promise<boolean>;
 };
 
 const MAX_PROFILE_NAME_LENGTH = 80;
@@ -170,25 +176,46 @@ export function ProfileHeaderCard({
   about,
   provider,
   socials,
+  showInDirectory,
   usernameInputPattern,
   updateProfileAction,
+  updateDirectoryPreferenceAction,
 }: ProfileHeaderCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [isDirectoryPending, startDirectoryTransition] = useTransition();
   const initials = toInitials(displayName);
   const providerLabel = formatProvider(provider);
   const [playClick] = useClickSound();
   const [playSoftClick] = useSoftClickSound();
+  const [playToggle] = useToggleSound();
   const discordUsername = socials?.discord?.username ?? "";
   const supportLabel = socials?.support?.label ?? "";
   const supportUrl = socials?.support?.url ?? "";
   const twitterUsername = socials?.twitter?.username ?? "";
   const [editingSocial, setEditingSocial] = useState<"discord" | "twitter" | null>(null);
+  const [directoryVisible, setDirectoryVisible] = useState(showInDirectory);
+
+  useEffect(() => {
+    setDirectoryVisible(showInDirectory);
+  }, [showInDirectory]);
 
   const handleInlineSubmit = async (formData: FormData) => {
     await updateProfileAction(formData);
     setEditingSocial(null);
   };
+
+  function handleDirectoryPreferenceChange(nextValue: boolean) {
+    playToggle();
+    setDirectoryVisible(nextValue);
+
+    startDirectoryTransition(async () => {
+      const ok = await updateDirectoryPreferenceAction(nextValue);
+      if (!ok) {
+        setDirectoryVisible(!nextValue);
+      }
+    });
+  }
 
   return (
     <form action={editingSocial ? handleInlineSubmit : updateProfileAction} className="space-y-6">
@@ -449,6 +476,29 @@ export function ProfileHeaderCard({
         </CardContent>
       </Card>
 
+      <Card className="rounded-4xl border border-border bg-card py-0 shadow-sm">
+        <CardContent className="px-6 py-6 sm:px-8">
+          <label className="flex items-center justify-between gap-4 cursor-pointer">
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-foreground">Show in directory</p>
+              <p className="text-xs text-muted-foreground">
+                When enabled, your profile appears on the public directory page.
+              </p>
+            </div>
+            <input
+              type="checkbox"
+              name="showInDirectory"
+              checked={directoryVisible}
+              disabled={isDirectoryPending}
+              onChange={(e) => {
+                handleDirectoryPreferenceChange(e.target.checked);
+              }}
+              className="size-5 shrink-0 cursor-pointer rounded border-border accent-primary disabled:cursor-not-allowed disabled:opacity-60"
+            />
+          </label>
+        </CardContent>
+      </Card>
+
       {editingSocial && !isEditing && (
         <>
           <input type="hidden" name="name" value={displayName} />
@@ -466,6 +516,7 @@ export function ProfileHeaderCard({
               <input type="hidden" name="supportLabel" value={supportLabel} />
             </>
           )}
+          {directoryVisible && <input type="hidden" name="showInDirectory" value="on" />}
         </>
       )}
     </form>

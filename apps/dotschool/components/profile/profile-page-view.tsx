@@ -26,6 +26,7 @@ type ProfileData = {
     } | null;
   };
   image: string | null;
+  showInDirectory: boolean;
   provider: string | null;
   createdAt: Date | null;
   updatedAt: Date | null;
@@ -40,6 +41,7 @@ type ProfilePageViewProps = {
   profile: ProfileData | null;
   usernameInputPattern: string;
   updateProfileAction: (formData: FormData) => Promise<void>;
+  updateDirectoryPreferenceAction: (showInDirectory: boolean) => Promise<boolean>;
 };
 
 export function ProfilePageView({
@@ -50,6 +52,7 @@ export function ProfilePageView({
   profile,
   usernameInputPattern,
   updateProfileAction,
+  updateDirectoryPreferenceAction,
 }: ProfilePageViewProps) {
   return (
     <div className="flex min-h-full flex-1 flex-col bg-background text-foreground">
@@ -81,8 +84,10 @@ export function ProfilePageView({
             about={profile?.about ?? null}
             provider={profile?.provider ?? null}
             socials={profile?.socials ?? null}
+            showInDirectory={profile?.showInDirectory ?? true}
             usernameInputPattern={usernameInputPattern}
             updateProfileAction={updateProfileAction}
+            updateDirectoryPreferenceAction={updateDirectoryPreferenceAction}
           />
         </div>
       </main>

@@ -156,6 +156,11 @@ export function SiteFooter({
                 </a>
               </li>
               <li>
+                <Link href="/dir" className={linkClass(brutalist, blue)}>
+                  Directory
+                </Link>
+              </li>
+              <li>
                 <Link href="/dashboard" className={linkClass(brutalist, blue)}>
                   Dashboard
                 </Link>
