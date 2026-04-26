@@ -6,11 +6,16 @@ import type { BatchProgramDetails } from "@/components/dashboard/batch-types";
 import { getConfirmedBatchWithMemberCount } from "@/server/batches/detail";
 import { getBatchModules } from "@/server/batches/modules";
 import { getBatchPeers } from "@/server/batches/peers";
-import { attachVolunteerRatings, getBatchVolunteers } from "@/server/batches/volunteers";
+import {
+  attachVolunteerRatings,
+  getBatchVolunteers,
+} from "@/server/batches/volunteers";
 
 type PageProps = { params: Promise<{ id: string }> };
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { id } = await params;
   const data = await getConfirmedBatchWithMemberCount(id);
   if (!data) {
@@ -29,7 +34,7 @@ export default async function BatchDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const { batch, memberCount, isEnrolled, enrollmentStatus } = data;
+  const { batch, memberCount, isEnrolled, enrollmentStatus, canOptOut } = data;
   const [volunteersRaw, modules, { peers, currentUserId }] = await Promise.all([
     getBatchVolunteers(batch.id),
     getBatchModules(batch.id),
@@ -65,6 +70,7 @@ export default async function BatchDetailPage({ params }: PageProps) {
       modules={modules}
       isEnrolled={isEnrolled}
       enrollmentStatus={enrollmentStatus}
+      canOptOut={canOptOut}
       batchId={batch.id}
       members={members}
     />

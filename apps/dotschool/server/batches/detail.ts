@@ -10,9 +10,15 @@ import {
 } from "@/server/db/schema";
 
 export type EnrollmentStatus = "none" | "applied" | "approved";
-export type TestStatus = "none" | "pending" | "in_progress" | "submitted" | "abandoned";
+export type TestStatus =
+  | "none"
+  | "pending"
+  | "in_progress"
+  | "submitted"
+  | "abandoned";
 
 export async function getConfirmedBatchWithMemberCount(batchId: string) {
+  const now = new Date();
   const batch = await db.query.batches.findFirst({
     where: eq(batches.id, batchId),
   });
@@ -79,5 +85,6 @@ export async function getConfirmedBatchWithMemberCount(batchId: string) {
     enrollmentStatus,
     testStatus,
     testOpensAt: batch.testOpensAt ? batch.testOpensAt.toISOString() : null,
+    canOptOut: isEnrolled && (!batch.startsAt || batch.startsAt > now),
   };
 }

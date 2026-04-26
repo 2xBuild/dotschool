@@ -1,6 +1,15 @@
 import "server-only";
 
-import { and, asc, count, desc, eq, gt, inArray, notInArray } from "drizzle-orm";
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  gt,
+  inArray,
+  notInArray,
+} from "drizzle-orm";
 
 import { batchHasProgramDetails } from "@/components/dashboard/batch-types";
 import type { BatchProgramDetails } from "@/components/dashboard/batch-types";
@@ -22,10 +31,19 @@ type BatchRow = typeof batches.$inferSelect;
 
 type ProgramDetailFields = Pick<
   BatchRow,
-  "roadmap" | "process" | "projects" | "leaderboard" | "rewardPool" | "hackathon" | "tips" | "rules"
+  | "roadmap"
+  | "process"
+  | "projects"
+  | "leaderboard"
+  | "rewardPool"
+  | "hackathon"
+  | "tips"
+  | "rules"
 >;
 
-function pickProgramDetailsFromFields(row: ProgramDetailFields): BatchProgramDetails | null {
+function pickProgramDetailsFromFields(
+  row: ProgramDetailFields,
+): BatchProgramDetails | null {
   const details: BatchProgramDetails = {
     roadmap: row.roadmap ?? null,
     process: row.process ?? null,
@@ -62,6 +80,7 @@ function toBatchTabItem(row: {
   rules: string | null;
   participantCount: number;
   testStatus?: string | null;
+  canOptOut: boolean;
 }): BatchTabItem {
   return {
     id: row.id,
@@ -79,6 +98,7 @@ function toBatchTabItem(row: {
     cardIconKeys: effectiveCardIconKeys(row.cardIconKeys, row.id),
     details: pickProgramDetailsFromFields(row),
     testStatus: row.testStatus ?? null,
+    canOptOut: row.canOptOut,
   };
 }
 
@@ -155,7 +175,9 @@ export async function getDashboardData(userId: string) {
         : await db
             .select()
             .from(batches)
-            .where(and(eq(batches.status, "confirmed"), gt(batches.startsAt, now)))
+            .where(
+              and(eq(batches.status, "confirmed"), gt(batches.startsAt, now)),
+            )
             .orderBy(batches.startsAt);
 
     yourBatchRows = await db
@@ -218,7 +240,10 @@ export async function getDashboardData(userId: string) {
   }
 
   const participantCountBatchIds = [
-    ...new Set([...upcomingRows.map((row) => row.id), ...yourBatchRows.map((row) => row.id)]),
+    ...new Set([
+      ...upcomingRows.map((row) => row.id),
+      ...yourBatchRows.map((row) => row.id),
+    ]),
   ];
   const participantCountRows =
     participantCountBatchIds.length > 0
@@ -240,6 +265,7 @@ export async function getDashboardData(userId: string) {
       toBatchTabItem({
         ...row,
         participantCount: participantCountMap.get(row.id) ?? 0,
+        canOptOut: row.startsAt ? row.startsAt > now : false,
       }),
     )
     .slice(0, 4);
@@ -249,6 +275,7 @@ export async function getDashboardData(userId: string) {
         ...row,
         participantCount: participantCountMap.get(row.id) ?? 0,
         testStatus: testStatusMap.get(row.id) ?? null,
+        canOptOut: row.startsAt ? row.startsAt > now : false,
       }),
     )
     .slice(0, 4);
@@ -282,7 +309,10 @@ export async function getDashboardData(userId: string) {
   const userVoteMap = new Map<string, "up" | "down">();
   if (userRow && possibleIds.length > 0) {
     const voted = await db
-      .select({ batchId: batchInterestVotes.batchId, vote: batchInterestVotes.vote })
+      .select({
+        batchId: batchInterestVotes.batchId,
+        vote: batchInterestVotes.vote,
+      })
       .from(batchInterestVotes)
       .where(
         and(
@@ -290,7 +320,8 @@ export async function getDashboardData(userId: string) {
           inArray(batchInterestVotes.batchId, possibleIds),
         ),
       );
-    for (const row of voted) userVoteMap.set(row.batchId, row.vote as "up" | "down");
+    for (const row of voted)
+      userVoteMap.set(row.batchId, row.vote as "up" | "down");
   }
 
   const possibleBatches: PossibleBatchItem[] = possibleBatchRows.map((row) => ({

@@ -53,7 +53,7 @@ const features: Feature[] = [
             Limited spots
           </span>
         </div>
-        <p className="text-[0.6rem] uppercase tracking-wide text-[#555] sm:text-sm sm:tracking-widest" style={cardFont}>
+        <p className="text-[0.6rem] uppercase tracking-wide text-black sm:text-sm sm:tracking-widest" style={cardFont}>
           Entrance test to filter passionate, high-energy learners
         </p>
       </>
@@ -102,7 +102,7 @@ const features: Feature[] = [
             className="flex flex-col items-center justify-center gap-1.5 px-1 py-2 sm:gap-3 sm:px-6 sm:py-4"
           >
             <div className="text-[#6b8af5]">{item.icon}</div>
-            <span className="text-[0.45rem] font-semibold uppercase tracking-wide text-[#555] sm:text-xs sm:tracking-wider" style={cardFont}>
+            <span className="text-[0.45rem] font-semibold uppercase tracking-wide text-black sm:text-xs sm:tracking-wider" style={cardFont}>
               {item.label}
             </span>
           </div>
@@ -116,7 +116,7 @@ const features: Feature[] = [
     blue: true,
     content: (
       <div className="flex flex-col items-center gap-1.5" style={cardFont}>
-        <p className="text-[0.6rem] uppercase tracking-wide text-[#555] sm:text-sm sm:tracking-widest lg:max-w-md lg:text-base">
+        <p className="text-[0.6rem] uppercase tracking-wide text-black sm:text-sm sm:tracking-widest lg:max-w-md lg:text-base">
           Learn by building <span className="font-bold text-[#1f49ff]">real-world</span> projects. Earn <span className="font-bold text-[#1f49ff]">rewards</span>, certificates and <span className="font-bold text-[#1f49ff]">reputation</span> that matters. </p>
       </div>
     ),
@@ -152,7 +152,7 @@ const features: Feature[] = [
             {globalCommunityOverflow.label}
           </li>
         </ul>
-        <p className="text-[0.6rem] uppercase tracking-wide text-[#555] sm:text-sm sm:tracking-widest" style={cardFont}>
+        <p className="text-[0.6rem] uppercase tracking-wide text-black sm:text-sm sm:tracking-widest" style={cardFont}>
           Learn with cracked global peers
         </p>
       </>
@@ -169,10 +169,10 @@ const features: Feature[] = [
           <span className="text-[0.55rem] font-semibold uppercase tracking-wide text-[#4a6cf7] sm:text-[0.7rem] sm:tracking-widest" style={cardFont}>
             Free forever
           </span>
-          <span className="text-[0.55rem] font-semibold uppercase tracking-wide text-[#555] sm:text-[0.7rem] sm:tracking-widest" style={cardFont}>
+          <span className="text-[0.55rem] font-semibold uppercase tracking-wide text-black sm:text-[0.7rem] sm:tracking-widest" style={cardFont}>
             Community driven
           </span>
-          <span className="text-[0.55rem] font-semibold uppercase tracking-wide text-[#555] sm:text-[0.7rem] sm:tracking-widest" style={cardFont}>
+          <span className="text-[0.55rem] font-semibold uppercase tracking-wide text-black sm:text-[0.7rem] sm:tracking-widest" style={cardFont}>
             Open source
           </span>
         </div>
@@ -184,7 +184,7 @@ const features: Feature[] = [
     span: 2,
     content: (
       <div className="flex flex-col items-center justify-center gap-3 text-center sm:gap-5">
-        <p className="text-[0.6rem] uppercase tracking-wide text-[#555] sm:text-sm sm:tracking-widest lg:text-base" style={cardFont}>
+        <p className="text-[0.6rem] uppercase tracking-wide text-black sm:text-sm sm:tracking-widest lg:text-base" style={cardFont}>
           Find your type of people and
 
         </p>
