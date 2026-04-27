@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { Logo } from "@/components/brand/logo";
 import { BatchNav, type BatchNavTab } from "@/components/dashboard/batch-nav";
-import { BatchOptOutButton } from "@/components/dashboard/batch-opt-out-button";
 import type { BatchProgramDetails } from "@/components/dashboard/batch-types";
 import { ModuleBrowser } from "@/components/dashboard/module-browser";
 import { TeamPanel, type RatedMember } from "@/components/dashboard/team-panel";
@@ -39,7 +38,6 @@ type BatchDetailViewProps = {
   modules: BatchModule[];
   isEnrolled: boolean;
   enrollmentStatus: EnrollmentStatus;
-  canOptOut: boolean;
   batchId: string;
   members: RatedMember[];
 };
@@ -103,7 +101,6 @@ export function BatchDetailView({
   modules,
   isEnrolled,
   enrollmentStatus,
-  canOptOut,
   batchId,
   members,
 }: BatchDetailViewProps) {
@@ -231,16 +228,6 @@ export function BatchDetailView({
               </span>
             </div>
           </div>
-          {canOptOut ? (
-            <div className="shrink-0">
-              <BatchOptOutButton
-                batchId={batchId}
-                batchTitle={title}
-                enrollmentStatus={isApproved ? "approved" : "applied"}
-                className="inline-flex min-w-[7.5rem] items-center justify-center rounded-full border border-border px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-              />
-            </div>
-          ) : null}
         </div>
       </div>
 

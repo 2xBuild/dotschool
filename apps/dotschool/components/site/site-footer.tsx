@@ -121,6 +121,11 @@ export function SiteFooter({
                 </Link>
               </li>
               <li>
+                <Link href="/journey" className={linkClass(brutalist, blue)}>
+                  Journey
+                </Link>
+              </li>
+              <li>
                 <Link href="/volunteer" className={linkClass(brutalist, blue)}>
                   Volunteer
                 </Link>
